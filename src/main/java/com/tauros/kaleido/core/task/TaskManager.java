@@ -18,7 +18,7 @@ public enum TaskManager {
 	}
 
 	private void init() {
-		executor = new ThreadPoolExecutor(5, 15, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
+		executor = new ThreadPoolExecutor(5, 10, 5, TimeUnit.SECONDS, new LinkedBlockingDeque<>());
 		taskPriorityBlockingQueue = new PriorityBlockingQueue<>(50, new Comparator<Task>() {
 			@Override
 			public int compare(Task o1, Task o2) {
