@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public interface DownloadConstant {
 
-	int           BUFFER_SIZE        =  51200;
+	int           BUFFER_SIZE        = 51200;
 	int           LOOP_BUFFER_SIZE   = 4096;
 	int           CONNECTION_TIMEOUT = 6000;
 	int           MAX_RETRY_TIMES    = 5;
