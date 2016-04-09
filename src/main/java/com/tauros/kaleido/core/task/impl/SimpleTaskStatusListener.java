@@ -10,7 +10,7 @@ import com.tauros.kaleido.core.task.TaskStatusListener;
  */
 public class SimpleTaskStatusListener implements TaskStatusListener {
 
-	private long taskId;
+	private long     taskId;
 	private TaskInfo taskInfo;
 
 	@Override

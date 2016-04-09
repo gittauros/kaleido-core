@@ -9,13 +9,13 @@ import java.util.concurrent.Executors;
 /**
  * Created by tauros on 2016/4/10.
  */
-public enum  TaskLogManager {
+public enum TaskLogManager {
 
 	INSTANCE;
 
 	private static long LOG_SLEEP = 1000;
 	private ConcurrentHashMap<Long, TaskStatusListener> listenerPool;
-	private Executor executor;
+	private Executor                                    executor;
 
 	TaskLogManager() {
 		init();
@@ -33,7 +33,7 @@ public enum  TaskLogManager {
 		}
 	}
 
-	private synchronized void removeListener(TaskStatusListener taskStatusListener){
+	private synchronized void removeListener(TaskStatusListener taskStatusListener) {
 		listenerPool.remove(taskStatusListener.getTaskId());
 	}
 
@@ -45,7 +45,7 @@ public enum  TaskLogManager {
 				StringBuilder logBuilder = new StringBuilder("");
 				int index = 0;
 				for (TaskStatusListener taskStatusListener : listenerPool.values()) {
-					index ++;
+					index++;
 					TaskInfo taskInfo = taskStatusListener.fetchInfo();
 					if (taskInfo != null) {
 						logBuilder.append(taskInfo.fullInfo());

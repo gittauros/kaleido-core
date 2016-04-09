@@ -3,7 +3,7 @@ package com.tauros.kaleido.core.download;
 /**
  * Created by tauros on 2016/4/9.
  */
-public enum  DownloaderStatus {
+public enum DownloaderStatus {
 
 	CREATE("create"),
 	PREPARING("preparing"),

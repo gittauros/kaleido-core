@@ -5,19 +5,19 @@ package com.tauros.kaleido.core.model.formbean;
  */
 public class ExHentaiListParamBean {
 
-	private int page;
-	private int fDoujinshi;
-	private int fManga;
-	private int fArtistcg;
-	private int fGamecg;
-	private int fWestern;
-	private int fNonh;
-	private int fImageset;
-	private int fCosplay;
-	private int fAsianporn;
-	private int fMisc;
-	private int advsearch;
-	private int fSrdd;
+	private int    page;
+	private int    fDoujinshi;
+	private int    fManga;
+	private int    fArtistcg;
+	private int    fGamecg;
+	private int    fWestern;
+	private int    fNonh;
+	private int    fImageset;
+	private int    fCosplay;
+	private int    fAsianporn;
+	private int    fMisc;
+	private int    advsearch;
+	private int    fSrdd;
 	private String fSearch;
 	private String fApply;
 	private String fSname;
@@ -25,21 +25,21 @@ public class ExHentaiListParamBean {
 
 	public ExHentaiListParamBean() {
 		this.page = 1;
-		this.fDoujinshi=1;
-		this.fManga=1;
-		this.fArtistcg=1;
-		this.fGamecg=1;
-		this.fWestern=1;
-		this.fNonh=1;
-		this.fImageset=1;
-		this.fCosplay=1;
-		this.fAsianporn=1;
-		this.fMisc=1;
-		this.advsearch=1;
-		this.fSrdd=2;
-		this.fApply="Apply+Filter";
-		this.fSname="on";
-		this.fStags="on";
+		this.fDoujinshi = 1;
+		this.fManga = 1;
+		this.fArtistcg = 1;
+		this.fGamecg = 1;
+		this.fWestern = 1;
+		this.fNonh = 1;
+		this.fImageset = 1;
+		this.fCosplay = 1;
+		this.fAsianporn = 1;
+		this.fMisc = 1;
+		this.advsearch = 1;
+		this.fSrdd = 2;
+		this.fApply = "Apply+Filter";
+		this.fSname = "on";
+		this.fStags = "on";
 		this.fSearch = "";
 	}
 

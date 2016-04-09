@@ -5,7 +5,6 @@ import com.tauros.kaleido.core.exception.KaleidoUnsupportedException;
 import com.tauros.kaleido.core.task.Task;
 import com.tauros.kaleido.core.task.TaskInfo;
 import com.tauros.kaleido.core.task.TaskStatusListener;
-import com.tauros.kaleido.core.task.TaskManager;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,7 +16,7 @@ public abstract class AbstractTask implements Task {
 	private static AtomicLong curTaskId = new AtomicLong(0);
 
 	private long taskId;
-	protected boolean ready = false;
+	protected boolean ready     = false;
 	protected boolean processed = false;
 	protected TaskStatusListener taskStatusListener;
 

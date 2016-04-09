@@ -1,7 +1,5 @@
 package com.tauros.kaleido.core.util;
 
-import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
-
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;

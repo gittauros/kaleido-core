@@ -73,6 +73,7 @@ public interface Task {
 
 	/**
 	 * 绑定状态监听器
+	 *
 	 * @param taskStatusListener
 	 */
 	void registerStatusListener(TaskStatusListener taskStatusListener);
@@ -84,6 +85,7 @@ public interface Task {
 
 	/**
 	 * 是否可重试
+	 *
 	 * @return
 	 */
 	boolean isRetryAble();

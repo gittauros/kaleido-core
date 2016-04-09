@@ -9,11 +9,11 @@ public class TaskInfo<E extends TaskInfo> {
 
 	private static AtomicLong curInfoId = new AtomicLong(0);
 
-	private long infoId;
-	private long taskId;
+	private long    infoId;
+	private long    taskId;
 	private boolean statusListenerExist;
-	private String threadName;
-	private E extraInfo;
+	private String  threadName;
+	private E       extraInfo;
 
 	{
 		infoId = curInfoId.incrementAndGet();
