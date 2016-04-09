@@ -13,7 +13,7 @@ public enum  TaskLogManager {
 
 	INSTANCE;
 
-	private static long LOG_SLEEP = 1500;
+	private static long LOG_SLEEP = 1000;
 	private ConcurrentHashMap<Long, TaskStatusListener> listenerPool;
 	private Executor executor;
 
