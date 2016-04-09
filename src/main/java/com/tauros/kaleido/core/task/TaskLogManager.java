@@ -40,6 +40,7 @@ public enum  TaskLogManager {
 	private class RunnableLog implements Runnable {
 		@Override
 		public void run() {
+			ConsoleLog.e("监听日志开始");
 			while (!listenerPool.isEmpty()) {
 				StringBuilder logBuilder = new StringBuilder("");
 				int index = 0;
@@ -63,6 +64,7 @@ public enum  TaskLogManager {
 					break;
 				}
 			}
+			ConsoleLog.e("监听日志结束");
 		}
 	}
 
