@@ -53,7 +53,9 @@ public enum  TaskLogManager {
 						}
 					}
 				}
-				ConsoleLog.e(logBuilder.toString());
+				if (logBuilder.length() > 0) {
+					ConsoleLog.e(logBuilder.toString());
+				}
 				try {
 					Thread.sleep(LOG_SLEEP);
 				} catch (InterruptedException ie) {
