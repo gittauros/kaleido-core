@@ -8,12 +8,12 @@ import java.net.URLEncoder;
  */
 public final class ImageUrlConverter {
 
-	public static String convertExhentaiImageUrl(String contextPath, String imageUrl) {
+	public static String convertExhentaiImageUrl(String imageUrl) {
 		try {
 			imageUrl = URLEncoder.encode(imageUrl, "UTF-8");
 		} catch (IOException ioe) {
 
 		}
-		return contextPath + "/image/exhentaiImage?imageUrl=" + imageUrl;
+		return "/image/exhentaiImage?imageUrl=" + imageUrl;
 	}
 }

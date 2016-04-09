@@ -18,7 +18,7 @@ public interface ExHentaiService {
 	 *
 	 * @return
 	 */
-	Map<String, Object> searchListPage(String contextPath, ExHentaiListParamBean paramBean);
+	Map<String, Object> searchListPage(ExHentaiListParamBean paramBean);
 
 	/**
 	 * 下载ex-hentai相册页图片

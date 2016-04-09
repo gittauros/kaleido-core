@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by tauros on 2016/4/9.
@@ -37,7 +36,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 	@Resource
 	private ExHentaiJsoupCookieDocumentSpider exHentaiJsoupCookieDocumentSpider;
 	@Resource
-	private UrlDownloaderDispatcher urlDownloaderDispatcher;
+	private UrlDownloaderDispatcher           urlDownloaderDispatcher;
 
 	private Map<String, String> getRequestProperty() {
 		Map<String, String> requestProperty = new HashMap<>();
@@ -53,7 +52,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 	}
 
 	@Override
-	public Map<String, Object> searchListPage(String contextPath, ExHentaiListParamBean paramBean) {
+	public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
 		Map<String, Object> model = new HashMap<>();
 		try {
 			String url = EXHENTAI_LIST_URL + '?';
@@ -111,9 +110,9 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 						}
 
 						ExHentaiListBO listBO = new ExHentaiListBO();
-						listBO.setTagImg(ImageUrlConverter.convertExhentaiImageUrl(contextPath, tagImg));
+						listBO.setTagImg(ImageUrlConverter.convertExhentaiImageUrl(tagImg));
 						listBO.setPublishTime(time);
-						listBO.setCoverImg(ImageUrlConverter.convertExhentaiImageUrl(contextPath, coverImg));
+						listBO.setCoverImg(ImageUrlConverter.convertExhentaiImageUrl(coverImg));
 						listBO.setTitle(title);
 						listBO.setBzUrl(bzUrl);
 
