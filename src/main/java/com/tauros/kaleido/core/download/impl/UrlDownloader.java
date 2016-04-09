@@ -7,16 +7,15 @@ import com.tauros.kaleido.core.exception.KaleidoException;
 import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
 import com.tauros.kaleido.core.task.impl.SimpleTaskStatusListener;
 import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.HttpUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
-import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -105,26 +104,6 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 		return downloadedList;
 	}
 
-	private URLConnection openConnection() throws IOException {
-		URL url = new URL(this.url);
-		//设置代理
-//		Proxy proxy = null;
-//		if (ProxySettings.isReady()) {
-//			InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getByName(ProxySettings.getProxyIp()), ProxySettings.getPort());
-//			proxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
-//		}
-
-		URLConnection connection;
-//		if (proxy == null) {
-		connection = url.openConnection();
-//		} else {
-//			connection = url.openConnection(proxy);
-//		}
-		//设置超时时间
-		connection.setConnectTimeout(CONNECTION_TIMEOUT);
-		return connection;
-	}
-
 	@Override
 	public boolean preDownload() {
 		updateStatus("准备下载工作");
@@ -171,12 +150,8 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				}
 			}
 
-			URLConnection connection = openConnection();
-			if (!requestProperty.isEmpty()) {
-				for (Map.Entry<String, String> entry : requestProperty.entrySet()) {
-					connection.setRequestProperty(entry.getKey(), entry.getValue());
-				}
-			}
+			URLConnection connection = HttpUtils.openConnection(this.url);
+			HttpUtils.setRequestProperty(connection, requestProperty);
 			inputStream = connection.getInputStream();
 			updateStatus("成功获取网络输入流");
 			bufferedInputStream = new BufferedInputStream(inputStream, BUFFER_SIZE);

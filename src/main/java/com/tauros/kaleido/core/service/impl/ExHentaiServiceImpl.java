@@ -8,13 +8,20 @@ import com.tauros.kaleido.core.model.formbean.ExHentaiListParamBean;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
 import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.HttpUtils;
+import com.tauros.kaleido.core.util.ImageUrlConverter;
 import com.tauros.kaleido.core.util.StackTraceUtil;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.math.NumberUtils;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +39,21 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 	@Resource
 	private UrlDownloaderDispatcher urlDownloaderDispatcher;
 
+	private Map<String, String> getRequestProperty() {
+		Map<String, String> requestProperty = new HashMap<>();
+		requestProperty.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+		requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
+		requestProperty.put("Accept-Language", "zh-CN,zh;q=0.8");
+		requestProperty.put("Connection", "keep-alive");
+		requestProperty.put("Host", "exhentai.org");
+		requestProperty.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
+		requestProperty.put("Cookie", exHentaiJsoupCookieDocumentSpider.getCookieString());
+
+		return requestProperty;
+	}
+
 	@Override
-	public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
+	public Map<String, Object> searchListPage(String contextPath, ExHentaiListParamBean paramBean) {
 		Map<String, Object> model = new HashMap<>();
 		try {
 			String url = EXHENTAI_LIST_URL + '?';
@@ -91,9 +111,9 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 						}
 
 						ExHentaiListBO listBO = new ExHentaiListBO();
-						listBO.setTagImg(tagImg);
+						listBO.setTagImg(ImageUrlConverter.convertExhentaiImageUrl(contextPath, tagImg));
 						listBO.setPublishTime(time);
-						listBO.setCoverImg(coverImg);
+						listBO.setCoverImg(ImageUrlConverter.convertExhentaiImageUrl(contextPath, coverImg));
 						listBO.setTitle(title);
 						listBO.setBzUrl(bzUrl);
 
@@ -127,6 +147,32 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 	@Override
 	public String download(String saveBasePath, String url, long sleep, boolean origin) {
 		return ex_hentai_download(saveBasePath, url, sleep, origin);
+	}
+
+	@Override
+	public byte[] image(String url) {
+		InputStream inputStream = null;
+		ByteArrayOutputStream byteArrayOutputStream = null;
+		try {
+			URLConnection connection = HttpUtils.openConnection(url);
+			HttpUtils.setRequestProperty(connection, getRequestProperty());
+
+			inputStream = connection.getInputStream();
+			byteArrayOutputStream = new ByteArrayOutputStream();
+			int count;
+			byte[] buffer = new byte[BUFFER_SIZE];
+			while ((count = inputStream.read(buffer)) != -1) {
+				byteArrayOutputStream.write(buffer, 0, count);
+			}
+
+			return byteArrayOutputStream.toByteArray();
+		} catch (IOException ioe) {
+			ConsoleLog.e("访问图片失败 url=" + url, ioe);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+			IOUtils.closeQuietly(byteArrayOutputStream);
+		}
+		return new byte[0];
 	}
 
 	private String ex_hentai_download(String saveBasePath, String url, long sleep, boolean origin) {
@@ -183,16 +229,9 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 				}
 			}
 
-			Map<String, String> requestProperty = new HashMap<>();
-			requestProperty.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-			requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
-			requestProperty.put("Accept-Language", "zh-CN,zh;q=0.8");
-			requestProperty.put("Connection", "keep-alive");
-			requestProperty.put("Host", "exhentai.org");
-			requestProperty.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
-			requestProperty.put("Cookie", exHentaiJsoupCookieDocumentSpider.getCookieString());
+
 			//开始下载
-			urlDownloaderDispatcher.dispatch(filePath, fileName, downloadSrc, requestProperty);
+			urlDownloaderDispatcher.dispatch(filePath, fileName, downloadSrc, getRequestProperty());
 
 			Elements next = document.select("#next");
 			if (next != null) {

@@ -2,6 +2,7 @@ package com.tauros.kaleido.core.service;
 
 import com.tauros.kaleido.core.model.formbean.ExHentaiListParamBean;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -17,7 +18,7 @@ public interface ExHentaiService {
 	 *
 	 * @return
 	 */
-	Map<String, Object> searchListPage(ExHentaiListParamBean paramBean);
+	Map<String, Object> searchListPage(String contextPath, ExHentaiListParamBean paramBean);
 
 	/**
 	 * 下载ex-hentai相册页图片
@@ -30,4 +31,11 @@ public interface ExHentaiService {
 	 */
 	String download(String saveBasePath, String url, long sleep, boolean origin);
 
+	/**
+	 * 访问ex-hentai图片
+	 *
+	 * @param url
+	 * @return
+	 */
+	byte[] image(String url);
 }
