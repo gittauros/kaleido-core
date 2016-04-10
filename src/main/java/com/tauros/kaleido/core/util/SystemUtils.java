@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by tauros on 2016/4/10.
@@ -27,7 +28,7 @@ public final class SystemUtils {
 	 * @return
 	 */
 	public static String getSavePathFileName() {
-		return getUserHomePath() + "/save_path.info";
+		return getUserHomePath() + "/kaleido_save_path.info";
 	}
 
 	/**
@@ -41,7 +42,10 @@ public final class SystemUtils {
 
 	private static File savePathFile;
 
-	static {
+	private static AtomicBoolean savePathCacheInitialized = new AtomicBoolean(false);
+	private static String        cachedSavePath           = "";
+
+	private static void initSavePath() {
 		savePathFile = new File(getSavePathFileName());
 		if (!savePathFile.exists()) {
 			FileWriter fileWriter = null;
@@ -71,14 +75,16 @@ public final class SystemUtils {
 		}
 	}
 
-	private static String cachedSavePath = "";
-
 	/**
 	 * 获取下载文件保存路径
 	 *
 	 * @return
 	 */
 	public static String getSavePath() {
+		if (!savePathCacheInitialized.get()) {
+			initSavePath();
+			savePathCacheInitialized.set(true);
+		}
 		if (StringUtils.isBlank(cachedSavePath)) {
 			return getDefaultSavePath();
 		}
