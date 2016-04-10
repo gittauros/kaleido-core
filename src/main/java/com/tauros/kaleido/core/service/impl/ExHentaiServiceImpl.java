@@ -167,11 +167,11 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			return byteArrayOutputStream.toByteArray();
 		} catch (IOException ioe) {
 			ConsoleLog.e("访问图片失败 url=" + url, ioe);
+			return new byte[0];
 		} finally {
 			IOUtils.closeQuietly(inputStream);
 			IOUtils.closeQuietly(byteArrayOutputStream);
 		}
-		return new byte[0];
 	}
 
 	private String ex_hentai_download(String saveBasePath, String url, long sleep, boolean origin) {
