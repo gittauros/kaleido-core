@@ -4,7 +4,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by tauros on 2016/4/10.
@@ -42,10 +41,13 @@ public final class SystemUtils {
 
 	private static File savePathFile;
 
-	private static AtomicBoolean savePathCacheInitialized = new AtomicBoolean(false);
-	private static String        cachedSavePath           = "";
+	private static boolean savePathCacheInitialized = false;
+	private static String  cachedSavePath           = "";
 
-	private static void initSavePath() {
+	private synchronized static void initSavePath() {
+		if (savePathFile != null) {
+			return;
+		}
 		savePathFile = new File(getSavePathFileName());
 		if (!savePathFile.exists()) {
 			FileWriter fileWriter = null;
@@ -81,9 +83,9 @@ public final class SystemUtils {
 	 * @return
 	 */
 	public static String getSavePath() {
-		if (!savePathCacheInitialized.get()) {
+		if (!savePathCacheInitialized) {
 			initSavePath();
-			savePathCacheInitialized.set(true);
+			savePathCacheInitialized = true;
 		}
 		if (StringUtils.isBlank(cachedSavePath)) {
 			return getDefaultSavePath();
