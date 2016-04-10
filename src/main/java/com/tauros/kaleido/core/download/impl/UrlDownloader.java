@@ -65,8 +65,9 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 	@Override
 	protected void setDownloaderInfo(DownloaderInfo<DownloaderInfo> downloaderInfo) {
 		downloaderInfo.setUrl(this.url);
-		downloaderInfo.setFileName(filePath + "/" + fileName);
-		downloaderInfo.setDownloadPercentage(DEFAULT_FORMAT.format(abs(100.0 * processLength / fileLength)) + "%");
+		downloaderInfo.setFileName(this.filePath + "/" + this.fileName);
+		downloaderInfo.setFileLength(this.fileLength);
+		downloaderInfo.setProcessLength(this.processLength);
 		downloaderInfo.setDownloaderMessage(this.downloaderMessage);
 	}
 

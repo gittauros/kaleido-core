@@ -1,22 +1,27 @@
 package com.tauros.kaleido.core.download;
 
+import com.tauros.kaleido.core.constant.DownloadConstant;
 import com.tauros.kaleido.core.task.TaskInfo;
+
+import static java.lang.Math.abs;
 
 /**
  * Created by tauros on 2016/4/9.
  */
-public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo {
+public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo implements DownloadConstant {
 
 	private String url;
 	private String fileName;
-	private String downloadPercentage;
+	private long   processLength;
+	private long   fileLength;
 	private String downloaderMessage;
 	private E      extraInfo;
 
 	@Override
 	protected String selfInfo() {
 		StringBuilder selfInfoBuilder = new StringBuilder("Downloader:\n");
-		selfInfoBuilder.append("process:").append(downloadPercentage).append(", ")
+		selfInfoBuilder.append("process:").append(DEFAULT_FORMAT.format(abs(100.0 * processLength / fileLength))).append("%")
+				.append("(").append(abs(processLength)).append("/").append(abs(fileLength)).append("), ")
 				.append("url=").append(url).append(", ")
 				.append("fileName=").append(fileName).append("\n")
 				.append("message:").append(downloaderMessage);
@@ -54,19 +59,27 @@ public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo {
 		this.fileName = fileName;
 	}
 
-	public String getDownloadPercentage() {
-		return downloadPercentage;
-	}
-
-	public void setDownloadPercentage(String downloadPercentage) {
-		this.downloadPercentage = downloadPercentage;
-	}
-
 	public String getDownloaderMessage() {
 		return downloaderMessage;
 	}
 
 	public void setDownloaderMessage(String downloaderMessage) {
 		this.downloaderMessage = downloaderMessage;
+	}
+
+	public long getProcessLength() {
+		return processLength;
+	}
+
+	public void setProcessLength(long processLength) {
+		this.processLength = processLength;
+	}
+
+	public long getFileLength() {
+		return fileLength;
+	}
+
+	public void setFileLength(long fileLength) {
+		this.fileLength = fileLength;
 	}
 }
