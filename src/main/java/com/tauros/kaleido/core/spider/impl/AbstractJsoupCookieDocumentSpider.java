@@ -75,7 +75,7 @@ public abstract class AbstractJsoupCookieDocumentSpider implements DocumentSpide
 				.header("Accept", E_ACCEPT)
 				.header("Accept-Encoding", E_ACCEPT_ENCODING)
 				.header("Accept-Language", E_ACCEPT_LANGUAGE)
-				.header("Cache-Control", "no-cache")
+				.header("KaleidoCache-Control", "no-cache")
 				.header("Connection", "keep-alive")
 				.header("User-Agent", DEFAULT_USER_AGENT)
 				.method(connectionMethod);

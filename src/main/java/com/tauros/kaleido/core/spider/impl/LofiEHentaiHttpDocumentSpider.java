@@ -46,7 +46,7 @@ public class LofiEHentaiHttpDocumentSpider implements DocumentSpider, SpiderCons
 		get.addHeader("Accept", LOFIE_ACCEPT);
 		get.addHeader("Accept-Encoding", LOFIE_ACCEPT_ENCODING);
 		get.addHeader("Accept-Language", LOFIE_ACCEPT_LANGUAGE);
-		get.addHeader("Cache-Control", "no-cache");
+		get.addHeader("KaleidoCache-Control", "no-cache");
 		get.addHeader("Connection", "keep-alive");
 		get.addHeader("User-Agent", DEFAULT_USER_AGENT);
 		if (cookie != null && !"".equals(cookie)) {

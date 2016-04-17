@@ -1,8 +1,9 @@
 package com.tauros.kaleido.core.test;
 
-import java.io.IOException;
+import com.tauros.kaleido.core.kaleidolib.KaleidoCache;
+import com.tauros.kaleido.core.kaleidolib.SizeUnit;
+
 import java.io.Serializable;
-import java.util.Scanner;
 
 /**
  * Created by tauros on 2016/4/9.
@@ -10,22 +11,10 @@ import java.util.Scanner;
 public class Demo implements Serializable {
 	private static final long serialVersionUID = -2777120453873339539L;
 
-	private static String trans(String str) {
-		int index = str.indexOf("?");
-		String pre = str.substring(0, index);
-		String suf = str.substring(index, str.length());
-		pre = pre.substring(pre.indexOf("$") + 1, pre.length());
-		pre = pre.replaceAll("=2", ":");
-		pre = pre.replaceAll("=1", ".");
+	static KaleidoCache<String, byte[]> cache =new KaleidoCache<String, byte[]>(SizeUnit.MEGABYTES, 100, (obj)->obj.length);
 
-		return pre + suf;
-	}
-
-	public static void main(String[] args) throws IOException {
-		Scanner scanner = new Scanner(System.in);
-		while (scanner.hasNext()) {
-			String str = scanner.nextLine();
-			System.out.println(trans(str));
-		}
+	public static void main(String[] args) throws Exception {
+		cache.put("zhy", new byte[]{1});
+		System.out.println(cache.get("zhy"));
 	}
 }

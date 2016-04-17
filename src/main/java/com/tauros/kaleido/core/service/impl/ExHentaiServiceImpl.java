@@ -1,10 +1,12 @@
 package com.tauros.kaleido.core.service.impl;
 
+import com.tauros.kaleido.core.constant.CacheTypeConstant;
 import com.tauros.kaleido.core.constant.DownloadConstant;
 import com.tauros.kaleido.core.constant.ExHentaiConstant;
 import com.tauros.kaleido.core.download.UrlDownloaderDispatcher;
 import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
 import com.tauros.kaleido.core.model.formbean.ExHentaiListParamBean;
+import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
 import com.tauros.kaleido.core.util.ConsoleLog;
@@ -33,6 +35,8 @@ import java.util.regex.Matcher;
  */
 public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, DownloadConstant {
 
+	@Resource
+	private CacheService                      cacheService;
 	@Resource
 	private ExHentaiJsoupCookieDocumentSpider exHentaiJsoupCookieDocumentSpider;
 	@Resource
@@ -150,6 +154,10 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 	@Override
 	public byte[] image(String url) {
+		byte[] data = cacheService.getByteArrayData(CacheTypeConstant.IMAGE, url);
+		if (data != null && data.length > 0) {
+			return data;
+		}
 		InputStream inputStream = null;
 		ByteArrayOutputStream byteArrayOutputStream = null;
 		try {
@@ -164,7 +172,9 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 				byteArrayOutputStream.write(buffer, 0, count);
 			}
 
-			return byteArrayOutputStream.toByteArray();
+			data = byteArrayOutputStream.toByteArray();
+			cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
+			return data;
 		} catch (IOException ioe) {
 			ConsoleLog.e("访问图片失败 url=" + url, ioe);
 			return new byte[0];
