@@ -160,6 +160,9 @@ public final class KaleidoCache<K, E> {
 			if (isCacheFull()) {
 				trimCache();
 			}
+			if (isHistoryFull()) {
+				trimHistory();
+			}
 		}
 		return true;
 	}
