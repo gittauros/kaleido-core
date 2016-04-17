@@ -38,7 +38,7 @@ public class CacheServiceImpl implements CacheService, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.imageCache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, new MemoryCalculator<byte[]>() {
+		this.imageCache = new KaleidoCache<>(SizeUnit.GIGABYTES, 1, new MemoryCalculator<byte[]>() {
 			@Override
 			public long calculate(byte[] obj) {
 				if (obj == null) {

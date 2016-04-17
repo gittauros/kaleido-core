@@ -4,7 +4,6 @@ import com.tauros.kaleido.core.util.ConsoleLog;
 
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static com.tauros.kaleido.core.kaleidolib.SizeUnit.convertToBytes;
 
@@ -13,7 +12,7 @@ import static com.tauros.kaleido.core.kaleidolib.SizeUnit.convertToBytes;
  */
 public final class KaleidoCache<K, E> {
 
-	private final int                    TO_CACHE_THRESHOLD = 2;
+	private final int TO_CACHE_THRESHOLD = 2;
 
 	private final MemoryCalculator<E> memoryCalculator;
 	private       Vector<Node>        history;
