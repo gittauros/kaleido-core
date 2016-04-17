@@ -149,8 +149,7 @@ public final class KaleidoCache<K, E> {
 		}
 		if (inCache) {
 			int index = cache.indexOf(node);
-			Node cacheNode = cache.get(index);
-			cacheNode.hit();
+			Node cacheNode = cache.get(index).hit();
 			cache.remove(index);
 			cache.add(0, cacheNode);
 		} else {
