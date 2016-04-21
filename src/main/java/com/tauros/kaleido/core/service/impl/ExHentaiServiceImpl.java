@@ -5,7 +5,7 @@ import com.tauros.kaleido.core.constant.DownloadConstant;
 import com.tauros.kaleido.core.constant.ExHentaiConstant;
 import com.tauros.kaleido.core.download.UrlDownloaderDispatcher;
 import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
-import com.tauros.kaleido.core.model.formbean.ExHentaiListParamBean;
+import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;

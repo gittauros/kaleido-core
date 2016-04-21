@@ -1,6 +1,6 @@
 package com.tauros.kaleido.core.service;
 
-import com.tauros.kaleido.core.model.formbean.ExHentaiListParamBean;
+import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
 
 import java.util.Map;
 

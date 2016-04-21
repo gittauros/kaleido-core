@@ -1,4 +1,4 @@
-package com.tauros.kaleido.core.model.formbean;
+package com.tauros.kaleido.core.model.bean;
 
 /**
  * Created by tauros on 2016/4/9.
