@@ -24,7 +24,7 @@ public enum TaskManager {
 			public int compare(Task o1, Task o2) {
 				if (o1.isReady() && o2.isReady()) {
 					return 0;
-				} else if (o1.isReady() && !o2.isReady()) {
+				} else if (o1.isReady()) {
 					return 1;
 				} else {
 					return -1;

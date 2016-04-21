@@ -1,11 +1,11 @@
-package com.tauros.kaleido.core.kaleidolib;
+package com.tauros.kaleido.core.cache;
 
 import com.tauros.kaleido.core.util.ConsoleLog;
 
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.tauros.kaleido.core.kaleidolib.SizeUnit.convertToBytes;
+import static com.tauros.kaleido.core.cache.SizeUnit.convertToBytes;
 
 /**
  * Created by tauros on 2016/4/17.
@@ -206,6 +206,21 @@ public final class KaleidoCache<K, E> {
 		if (inHistory(keyNode)) {
 			data = findHistoryNode(keyNode).data;
 			put(key, data);
+		}
+		return data;
+	}
+
+	public E getNotHit(K key) {
+		if (key == null) {
+			return null;
+		}
+		Node keyNode = new Node(key, null);
+		E data = null;
+		if (inCache(keyNode)) {
+			data = findCacheNode(keyNode).data;
+		}
+		if (inHistory(keyNode)) {
+			data = findHistoryNode(keyNode).data;
 		}
 		return data;
 	}

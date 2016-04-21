@@ -42,6 +42,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 	private final String filePath;
 	private final String fileName;
 	private       int    retryTimes;
+	private boolean retryAble;
 
 	private String downloaderMessage;
 
@@ -51,6 +52,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 		this.fileName = fileName;
 		this.retryTimes = retryTimes;
 		this.url = url;
+		this.retryAble = true;
 	}
 
 	public void ready() {
@@ -110,6 +112,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 		updateStatus("准备下载工作");
 		if (StringUtils.isBlank(filePath) || StringUtils.isBlank(fileName) || findDownloaded()) {
 			ConsoleLog.e(url + " - 下载取消");
+			this.retryAble = false;
 			return false;
 		}
 		return true;
@@ -173,6 +176,13 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				bufferedOutputStream.write(buffer, 0, len);
 				processLength += len;
 				updateStatus("更新已下载文件长度");
+			}
+//			ConsoleLog.e(processLength + "/" + fileLength);
+			if (processLength < fileLength) {
+				updateStatus(String.format("processDownload fail processLength:{} fileLength:{}", processLength, fileLength));
+				return false;
+			} else if (processLength > fileLength) {
+				throw new KaleidoIllegalStateException(String.format("processDownload > processLength {}/{}", processLength, fileLength));
 			}
 			bufferedOutputStream.flush();
 			return true;
@@ -243,13 +253,13 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				.setTaskStatusListener(new SimpleTaskStatusListener())
 				.setRequestProperty(this.requestProperty)
 				.build();
-		updateStatus("重试 url=" + this.url + ", retryTimes=" + this.retryTimes);
+		updateStatus("重试 url=" + this.url + ", retryTimes=" + this.retryTimes + 1);
 		return downloader;
 	}
 
 	@Override
 	public boolean isRetryAble() {
-		return this.retryTimes < MAX_RETRY_TIMES;
+		return this.retryAble & this.retryTimes < MAX_RETRY_TIMES;
 	}
 
 	public void clearRequestProperty() {

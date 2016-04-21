@@ -1,4 +1,4 @@
-package com.tauros.kaleido.core.kaleidolib;
+package com.tauros.kaleido.core.cache;
 
 import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
 

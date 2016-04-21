@@ -2,9 +2,9 @@ package com.tauros.kaleido.core.service.impl;
 
 import com.tauros.kaleido.core.constant.CacheTypeConstant;
 import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
-import com.tauros.kaleido.core.kaleidolib.KaleidoCache;
-import com.tauros.kaleido.core.kaleidolib.MemoryCalculator;
-import com.tauros.kaleido.core.kaleidolib.SizeUnit;
+import com.tauros.kaleido.core.cache.KaleidoCache;
+import com.tauros.kaleido.core.cache.MemoryCalculator;
+import com.tauros.kaleido.core.cache.SizeUnit;
 import com.tauros.kaleido.core.service.CacheService;
 import org.springframework.beans.factory.InitializingBean;
 

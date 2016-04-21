@@ -1,7 +1,7 @@
 package com.tauros.kaleido.core.test;
 
-import com.tauros.kaleido.core.kaleidolib.KaleidoCache;
-import com.tauros.kaleido.core.kaleidolib.SizeUnit;
+import com.tauros.kaleido.core.cache.KaleidoCache;
+import com.tauros.kaleido.core.cache.SizeUnit;
 
 import java.io.Serializable;
 
