@@ -11,6 +11,7 @@ import java.util.Map;
 public final class HttpUtils {
 
 	private static final int CONNECTION_TIMEOUT = 6000;
+	private static final int READ_TIMEOUT = 30000;
 
 	public static URLConnection openConnection(String urlStr) throws IOException {
 		URL url = new URL(urlStr);
@@ -29,6 +30,8 @@ public final class HttpUtils {
 //		}
 		//设置超时时间
 		connection.setConnectTimeout(CONNECTION_TIMEOUT);
+		//设置读取超时时间
+		connection.setReadTimeout(READ_TIMEOUT);
 		return connection;
 	}
 
