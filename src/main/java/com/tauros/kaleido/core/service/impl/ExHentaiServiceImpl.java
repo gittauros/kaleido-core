@@ -343,6 +343,9 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 		try {
 			Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
 			Element firstImgDiv = document.select(".gdtm").first();
+			if (firstImgDiv == null) {
+				firstImgDiv = document.select(".gdtl").first();
+			}
 			Element firstA = firstImgDiv.select("a").first();
 			String href = firstA.attr("href");
 
