@@ -15,6 +15,7 @@ import com.tauros.kaleido.core.util.HttpUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.math.NumberUtils;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -146,7 +147,16 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 		url += "?p=" + (page - 1);
 		url += "&inline_set=ts_" + (large ? "l" : "m");
 
-		Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+		String cacheKey = url;
+
+		Document document;
+		String html = cacheService.getStringData(CacheTypeConstant.HTML, cacheKey);
+		if (html != null) {
+			document = Jsoup.parse(html);
+		} else {
+			document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+			cacheService.putStringData(CacheTypeConstant.HTML, cacheKey, document.toString());
+		}
 
 		List<ExHentaiGalleryBO> galleryBOs = new ArrayList<>();
 		Elements photos;

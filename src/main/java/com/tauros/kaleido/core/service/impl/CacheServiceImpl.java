@@ -14,6 +14,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class CacheServiceImpl implements CacheService, InitializingBean {
 
 	private KaleidoCache<String, byte[]> imageCache;
+	private KaleidoCache<String, String> htmlCache;
 
 	@Override
 	public byte[] getByteArrayData(CacheTypeConstant type, String key) {
@@ -37,6 +38,27 @@ public class CacheServiceImpl implements CacheService, InitializingBean {
 	}
 
 	@Override
+	public String getStringData(CacheTypeConstant type, String key) {
+		switch (type) {
+			case HTML:
+				return htmlCache.get(key);
+			default:
+				throw new KaleidoIllegalStateException("no such cache type");
+		}
+	}
+
+	@Override
+	public void putStringData(CacheTypeConstant type, String key, String data) {
+		switch (type) {
+			case HTML:
+				htmlCache.put(key, data);
+				break;
+			default:
+				throw new KaleidoIllegalStateException("no such cache type");
+		}
+	}
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		this.imageCache = new KaleidoCache<>(SizeUnit.GIGABYTES, 1, new MemoryCalculator<byte[]>() {
 			@Override
@@ -45,6 +67,15 @@ public class CacheServiceImpl implements CacheService, InitializingBean {
 					return 0;
 				}
 				return obj.length;
+			}
+		});
+		this.htmlCache = new KaleidoCache<String, String>(SizeUnit.MEGABYTES, 100, new MemoryCalculator<String>() {
+			@Override
+			public long calculate(String obj) {
+				if (obj == null){
+					return 0;
+				}
+				return obj.getBytes().length;
 			}
 		});
 	}

@@ -5,22 +5,13 @@ package com.tauros.kaleido.core.constant;
  */
 public enum CacheTypeConstant {
 
-	IMAGE("image", 1000);
+	IMAGE("image"),
+	HTML("html");
 
 	private String type;
-	private int cacheSize;
 
-	CacheTypeConstant(String type, int cacheSize) {
+	CacheTypeConstant(String type) {
 		this.type = type;
-		this.cacheSize = cacheSize;
-	}
-
-	public int getCacheSize() {
-		return cacheSize;
-	}
-
-	public void setCacheSize(int cacheSize) {
-		this.cacheSize = cacheSize;
 	}
 
 	public String getType() {
