@@ -38,6 +38,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 
 	private long fileLength = -1;
 	private long processLength;
+	private boolean chunked;
 
 	private final String filePath;
 	private final String fileName;
@@ -71,6 +72,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 		downloaderInfo.setFileLength(this.fileLength);
 		downloaderInfo.setProcessLength(this.processLength);
 		downloaderInfo.setDownloaderMessage(this.downloaderMessage);
+		downloaderInfo.setChunked(chunked);
 	}
 
 	/**
@@ -163,9 +165,15 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 			bufferedOutputStream = new BufferedOutputStream(outputStream, BUFFER_SIZE);
 			updateStatus("成功打开文件输出流");
 
-			setFileLength(connection.getContentLengthLong());
 			processLength = 0;
-			updateStatus("文件长度已确定");
+
+			if("chunked".equals(connection.getHeaderField("Transfer-Encoding"))) {
+				this.chunked = true;
+			} else {
+				this.chunked = false;
+				setFileLength(connection.getContentLengthLong());
+				updateStatus("文件长度已确定");
+			}
 
 			byte[] buffer = new byte[LOOP_BUFFER_SIZE];
 			while (true) {
@@ -175,6 +183,9 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				}
 				bufferedOutputStream.write(buffer, 0, len);
 				processLength += len;
+				if (chunked) {
+					setFileLength(processLength);
+				}
 				updateStatus("更新已下载文件长度");
 			}
 //			ConsoleLog.e(processLength + "/" + fileLength);
@@ -206,7 +217,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 		if (fileLength < 0) {
 			throw new KaleidoIllegalStateException("file length incorrect fileLength=" + fileLength);
 		}
-		if (this.fileLength != -1) {
+		if (!this.chunked && this.fileLength != -1) {
 			throw new KaleidoException("file length has been determined");
 		}
 		this.fileLength = fileLength;

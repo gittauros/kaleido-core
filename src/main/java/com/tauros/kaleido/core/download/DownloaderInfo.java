@@ -12,6 +12,7 @@ public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo implement
 
 	private String url;
 	private String fileName;
+	private boolean chunked;
 	private long   processLength;
 	private long   fileLength;
 	private String downloaderMessage;
@@ -25,6 +26,9 @@ public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo implement
 				.append("url=").append(url).append(", ")
 				.append("fileName=").append(fileName).append("\n")
 				.append("message:").append(downloaderMessage);
+		if (chunked) {
+			selfInfoBuilder.append("\nencoding:chunked");
+		}
 		return selfInfoBuilder.toString();
 	}
 
@@ -81,5 +85,13 @@ public class DownloaderInfo<E extends DownloaderInfo> extends TaskInfo implement
 
 	public void setFileLength(long fileLength) {
 		this.fileLength = fileLength;
+	}
+
+	public boolean isChunked() {
+		return chunked;
+	}
+
+	public void setChunked(boolean chunked) {
+		this.chunked = chunked;
 	}
 }
