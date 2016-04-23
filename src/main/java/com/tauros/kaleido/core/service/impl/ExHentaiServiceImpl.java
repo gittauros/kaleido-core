@@ -10,7 +10,7 @@ import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
-import com.tauros.kaleido.core.util.Log;
+import com.tauros.kaleido.core.util.ConsoleLog;
 import com.tauros.kaleido.core.util.HttpUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -248,11 +248,10 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 		//最大页数获取
 		Elements pageTable = document.select(".ptt");
-		Elements pageTd = pageTable.select(".ptds");
-		Element lastPageTd = pageTd.last();
-		Element lastPageA = lastPageTd.select("a").first();
-		String maxPageStr = lastPageA.html();
-		int maxPage = NumberUtils.toInt(maxPageStr, 1);
+		Elements pageTds = pageTable.select("td");
+		Element pageTd = pageTds.get(pageTds.size() - 2);
+		Element pageA = pageTd.select("a").first();
+		int maxPage = NumberUtils.toInt(pageA.html(), 1);
 
 		model.put(GALLERY_BO_KEY, galleryBOs);
 		model.put(MAX_PAGE_KEY, maxPage);
@@ -292,7 +291,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
 			return data;
 		} catch (IOException ioe) {
-			Log.e("访问图片失败 url=" + url, ioe);
+			ConsoleLog.e("访问图片失败 url=" + url, ioe);
 			return new byte[0];
 		} finally {
 			IOUtils.closeQuietly(inputStream);
@@ -330,7 +329,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return "下载成功！";
 		} catch (Exception e) {
-			Log.e(e);
+			ConsoleLog.e(e);
 			return "下载错误！";
 		}
 	}
@@ -350,7 +349,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 				Elements originImgA = originImgDiv.select("a");
 				if (originImgA != null && originImgA.size() > 0) {
 					downloadSrc = originImgA.first().attr("href");
-					Log.e("下载原图 - " + downloadSrc);
+					ConsoleLog.e("下载原图 - " + downloadSrc);
 				}
 			}
 
@@ -373,7 +372,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return END_OF_GRAB_PAGE;
 		} catch (Exception e) {
-			Log.e(e);
+			ConsoleLog.e(e);
 			return END_OF_GRAB_PAGE;
 		}
 	}

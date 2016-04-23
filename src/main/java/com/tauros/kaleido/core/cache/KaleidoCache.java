@@ -1,6 +1,6 @@
 package com.tauros.kaleido.core.cache;
 
-import com.tauros.kaleido.core.util.Log;
+import com.tauros.kaleido.core.util.ConsoleLog;
 
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
@@ -127,7 +127,7 @@ public final class KaleidoCache<K, E> {
 			Node node = history.lastElement();
 			history.remove(history.size() - 1);
 			historyMemory -= node.memorySize();
-			Log.e("缓存历史抛弃：key=" + node.key);
+			ConsoleLog.e("缓存历史抛弃：key=" + node.key);
 		}
 		trimLock.unlock();
 	}
@@ -138,7 +138,7 @@ public final class KaleidoCache<K, E> {
 			Node node = cache.lastElement();
 			cache.remove(cache.size() - 1);
 			cacheMemory -= node.memorySize();
-			Log.e("缓存抛弃：key=" + node.key);
+			ConsoleLog.e("缓存抛弃：key=" + node.key);
 		}
 		trimLock.unlock();
 	}

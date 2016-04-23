@@ -2,7 +2,7 @@ package com.tauros.kaleido.core.spider.impl;
 
 import com.tauros.kaleido.core.constant.SpiderConstant;
 import com.tauros.kaleido.core.spider.DocumentSpider;
-import com.tauros.kaleido.core.util.Log;
+import com.tauros.kaleido.core.util.ConsoleLog;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -70,9 +70,9 @@ public class LofiEHentaiHttpDocumentSpider implements DocumentSpider, SpiderCons
 				return response;
 			} catch (Exception e) {
 				if (i < RETRY_TIMES) {
-					Log.e(" - 重试第" + i + "次, url=" + get.getURI());
+					ConsoleLog.e(" - 重试第" + i + "次, url=" + get.getURI());
 				} else {
-					Log.e(" - 重试失败");
+					ConsoleLog.e(" - 重试失败");
 				}
 			}
 		}
@@ -99,9 +99,9 @@ public class LofiEHentaiHttpDocumentSpider implements DocumentSpider, SpiderCons
 				return sb.toString();
 			} catch (Exception e) {
 				if (i < RETRY_TIMES) {
-					Log.e(" - 重试第" + i + "次, response=" + response, e);
+					ConsoleLog.e(" - 重试第" + i + "次, response=" + response, e);
 				} else {
-					Log.e(" - 重试失败", e);
+					ConsoleLog.e(" - 重试失败", e);
 				}
 			} finally {
 				IOUtils.closeQuietly(isReader);

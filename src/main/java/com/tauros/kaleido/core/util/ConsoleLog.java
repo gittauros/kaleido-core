@@ -3,7 +3,7 @@ package com.tauros.kaleido.core.util;
 /**
  * Created by tauros on 2015/2/18.
  */
-public final class Log {
+public final class ConsoleLog {
 
 	public static void e(String msg, Exception e) {
 		System.out.println(msg + "\n" + StackTraceUtil.getStackTrace(e));

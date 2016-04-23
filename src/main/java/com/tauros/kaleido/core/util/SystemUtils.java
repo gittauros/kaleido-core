@@ -56,7 +56,7 @@ public final class SystemUtils {
 				fileWriter.write(getDefaultSavePath());
 				fileWriter.flush();
 			} catch (IOException ioe) {
-				Log.e("写入保存路径文件异常", ioe);
+				ConsoleLog.e("写入保存路径文件异常", ioe);
 			} finally {
 				IOUtils.closeQuietly(fileWriter);
 			}
@@ -69,7 +69,7 @@ public final class SystemUtils {
 				String savePath = bufferedReader.readLine();
 				cachedSavePath = savePath;
 			} catch (IOException ioe) {
-				Log.e("读取保存路径文件异常", ioe);
+				ConsoleLog.e("读取保存路径文件异常", ioe);
 			} finally {
 				IOUtils.closeQuietly(fileReader);
 				IOUtils.closeQuietly(bufferedReader);
@@ -101,7 +101,7 @@ public final class SystemUtils {
 	public synchronized static boolean setSavePath(String savePath) {
 		File testFile = new File(savePath);
 		if (testFile.exists() && !testFile.isDirectory()) {
-			Log.e("savePath 不是 文件路径");
+			ConsoleLog.e("savePath 不是 文件路径");
 			return false;
 		}
 		cachedSavePath = savePath;
@@ -115,7 +115,7 @@ public final class SystemUtils {
 			fileWriter.flush();
 			return true;
 		} catch (IOException ioe) {
-			Log.e("写入保存路径文件异常", ioe);
+			ConsoleLog.e("写入保存路径文件异常", ioe);
 			return false;
 		} finally {
 			IOUtils.closeQuietly(fileWriter);

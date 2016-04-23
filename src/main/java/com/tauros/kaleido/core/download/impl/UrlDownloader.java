@@ -6,7 +6,7 @@ import com.tauros.kaleido.core.download.build.UrlDownloaderBuilder;
 import com.tauros.kaleido.core.exception.KaleidoException;
 import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
 import com.tauros.kaleido.core.task.impl.SimpleTaskStatusListener;
-import com.tauros.kaleido.core.util.Log;
+import com.tauros.kaleido.core.util.ConsoleLog;
 import com.tauros.kaleido.core.util.HttpUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -87,7 +87,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				fileNameList.addAll(tempList);
 			}
 		} catch (IOException e) {
-			Log.e(e);
+			ConsoleLog.e(e);
 			fileNameList = new CopyOnWriteArrayList<String>();
 		}
 		return fileNameList;
@@ -111,7 +111,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 	public boolean preDownload() {
 		updateStatus("准备下载工作");
 		if (StringUtils.isBlank(filePath) || StringUtils.isBlank(fileName) || findDownloaded()) {
-			Log.e(url + " - 下载取消");
+			ConsoleLog.e(url + " - 下载取消");
 			this.retryAble = false;
 			return false;
 		}
@@ -177,7 +177,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				processLength += len;
 				updateStatus("更新已下载文件长度");
 			}
-//			Log.e(processLength + "/" + fileLength);
+//			ConsoleLog.e(processLength + "/" + fileLength);
 			if (processLength < fileLength) {
 				updateStatus(String.format("processDownload fail processLength:{} fileLength:{}", processLength, fileLength));
 				return false;
@@ -187,11 +187,11 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 			bufferedOutputStream.flush();
 			return true;
 		} catch (IOException ioe) {
-			Log.e("processDownload exception url=" + url, ioe);
+			ConsoleLog.e("processDownload exception url=" + url, ioe);
 			updateStatus("下载失败");
 			return false;
 		} catch (KaleidoException ke) {
-			Log.e("processDownload exception url=" + url, ke);
+			ConsoleLog.e("processDownload exception url=" + url, ke);
 			updateStatus("下载失败");
 			return false;
 		} finally {
@@ -233,7 +233,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 			CopyOnWriteArrayList<String> downloadedList = getDownloadedList();
 			downloadedList.add(fileName);
 		} catch (IOException ioe) {
-			Log.e("写入文件下载成功出错", ioe);
+			ConsoleLog.e("写入文件下载成功出错", ioe);
 		} finally {
 			IOUtils.closeQuietly(outputStream);
 		}
