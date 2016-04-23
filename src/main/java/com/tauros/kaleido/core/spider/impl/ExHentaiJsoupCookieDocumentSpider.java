@@ -1,7 +1,7 @@
 package com.tauros.kaleido.core.spider.impl;
 
 import com.tauros.kaleido.core.constant.SpiderConstant;
-import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.Log;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Connection;
@@ -36,16 +36,16 @@ public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocume
 					br = new BufferedReader(fr);
 					hardcodeCookie = br.readLine();
 				} catch (IOException ioe) {
-					ConsoleLog.e(" - cookie文件读取异常", ioe);
+					Log.e(" - cookie文件读取异常", ioe);
 				} finally {
 					IOUtils.closeQuietly(fr);
 					IOUtils.closeQuietly(br);
 				}
 			} else {
-				ConsoleLog.e(" - cookie文件不存在");
+				Log.e(" - cookie文件不存在");
 			}
 		} catch (Exception e) {
-			ConsoleLog.e(" - 初始化exhentai-cookie异常", e);
+			Log.e(" - 初始化exhentai-cookie异常", e);
 		}
 	}
 
@@ -75,7 +75,7 @@ public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocume
 					bw.write(hardcodeCookie);
 					bw.flush();
 				} catch (IOException ioe) {
-					ConsoleLog.e(" - cookie文件写入异常", ioe);
+					Log.e(" - cookie文件写入异常", ioe);
 				} finally {
 					IOUtils.closeQuietly(fw);
 					IOUtils.closeQuietly(bw);
@@ -110,7 +110,7 @@ public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocume
 							memoryCookieMap.put(key, value);
 						}
 					} catch (Exception e) {
-						ConsoleLog.e(" - cookie解析异常：" + kv, e);
+						Log.e(" - cookie解析异常：" + kv, e);
 					}
 				}
 			}

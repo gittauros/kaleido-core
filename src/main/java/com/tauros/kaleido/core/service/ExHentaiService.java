@@ -9,15 +9,22 @@ import java.util.Map;
  */
 public interface ExHentaiService {
 
-	String MAX_PAGE_KEY = "maxPage";
-	String LIST_BO_KEY  = "listBOs";
-
 	/**
 	 * 抓取ex-hentai搜索页
 	 *
 	 * @return
 	 */
 	Map<String, Object> searchListPage(ExHentaiListParamBean paramBean);
+
+	/**
+	 * 抓取ex-hentai相册页
+	 *
+	 * @param url
+	 * @param large
+	 * @param page
+	 * @return
+	 */
+	Map<String, Object> galleryPage(String url, boolean large, int page);
 
 	/**
 	 * 下载ex-hentai相册页图片

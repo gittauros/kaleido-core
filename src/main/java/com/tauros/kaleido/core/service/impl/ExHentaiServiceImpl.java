@@ -4,15 +4,14 @@ import com.tauros.kaleido.core.constant.CacheTypeConstant;
 import com.tauros.kaleido.core.constant.DownloadConstant;
 import com.tauros.kaleido.core.constant.ExHentaiConstant;
 import com.tauros.kaleido.core.download.UrlDownloaderDispatcher;
-import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
 import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
+import com.tauros.kaleido.core.model.bo.ExHentaiGalleryBO;
+import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
-import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.Log;
 import com.tauros.kaleido.core.util.HttpUtils;
-import com.tauros.kaleido.core.util.ImageUrlConverter;
-import com.tauros.kaleido.core.util.StackTraceUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.math.NumberUtils;
@@ -58,92 +57,199 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 	@Override
 	public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
 		Map<String, Object> model = new HashMap<>();
-		try {
-			String url = EXHENTAI_LIST_URL + '?';
-			if (paramBean.getPage() > 1) {
-				url += EXHENTAI_LIST_PAGE + "=" + (paramBean.getPage() - 1) + "&";
+		String url = EXHENTAI_LIST_URL + '?';
+		if (paramBean.getPage() > 1) {
+			url += EXHENTAI_LIST_PAGE + "=" + (paramBean.getPage() - 1) + "&";
+		}
+		url += EXHENTAI_LIST_FDOUJINSHI + "=" + paramBean.getfDoujinshi() + "&";
+		url += EXHENTAI_LIST_FMANGA + "=" + paramBean.getfManga() + "&";
+		url += EXHENTAI_LIST_FARTISTCG + "=" + paramBean.getfArtistcg() + "&";
+		url += EXHENTAI_LIST_FGAMECG + "=" + paramBean.getfGamecg() + "&";
+		url += EXHENTAI_LIST_FWESTERN + "=" + paramBean.getfWestern() + "&";
+		url += EXHENTAI_LIST_FNONH + "=" + paramBean.getfNonh() + "&";
+		url += EXHENTAI_LIST_FIMAGESET + "=" + paramBean.getfImageset() + "&";
+		url += EXHENTAI_LIST_FCOSPLAY + "=" + paramBean.getfCosplay() + "&";
+		url += EXHENTAI_LIST_FASIANPORN + "=" + paramBean.getfAsianporn() + "&";
+		url += EXHENTAI_LIST_FMISC + "=" + paramBean.getfMisc() + "&";
+		url += EXHENTAI_LIST_FSEARCH + "=" + paramBean.getfSearch() + "&";
+		url += EXHENTAI_LIST_FAPPLY + "=" + paramBean.getfApply() + "&";
+		url += EXHENTAI_LIST_ADVSEARCH + "=" + paramBean.getAdvsearch() + "&";
+		url += EXHENTAI_LIST_FSNAME + "=" + paramBean.getfSname() + "&";
+		url += EXHENTAI_LIST_FSTAGS + "=" + paramBean.getfStags() + "&";
+		url += EXHENTAI_LIST_FSRDD + "=" + paramBean.getfSrdd();
+
+		Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+
+		List<ExHentaiListBO> listBOs = new ArrayList<>();
+		Elements table = document.select(".itg");
+		if (table != null) {
+			Elements trs = table.select("tr");
+			for (Element tr : trs) {
+				Elements tds = tr.select("td");
+				if (tds.size() == 0) {
+					continue;
+				}
+				Element tagCell = tds.get(0);
+				Element timeCell = tds.get(1);
+				Element detailCell = tds.get(2);
+
+				String tagImg = tagCell.select("img").attr("src");
+				String time = timeCell.html();
+				String titleAndCoverImg = detailCell.select(".it2").first().html();
+				String bzUrl = detailCell.select(".it5 a").first().attr("href");
+
+				String[] titleAndCoverImgInfo = titleAndCoverImg.split("~");
+				String coverImg;
+				String title;
+				if (titleAndCoverImgInfo.length > 3) {
+					coverImg = "http://" + titleAndCoverImgInfo[1] + "/" + titleAndCoverImgInfo[2];
+					title = titleAndCoverImgInfo[3];
+				} else {
+					Element img = detailCell.select(".it2").select("img").first();
+					coverImg = img.attr("src");
+					title = img.attr("alt");
+				}
+
+				ExHentaiListBO listBO = new ExHentaiListBO();
+				listBO.setTagImg(tagImg);
+				listBO.setPublishTime(time);
+				listBO.setCoverImg(coverImg);
+				listBO.setTitle(title);
+				listBO.setBzUrl(bzUrl);
+				listBO.setGalleryUrl(bzUrl);
+
+				listBOs.add(listBO);
 			}
-			url += EXHENTAI_LIST_FDOUJINSHI + "=" + paramBean.getfDoujinshi() + "&";
-			url += EXHENTAI_LIST_FMANGA + "=" + paramBean.getfManga() + "&";
-			url += EXHENTAI_LIST_FARTISTCG + "=" + paramBean.getfArtistcg() + "&";
-			url += EXHENTAI_LIST_FGAMECG + "=" + paramBean.getfGamecg() + "&";
-			url += EXHENTAI_LIST_FWESTERN + "=" + paramBean.getfWestern() + "&";
-			url += EXHENTAI_LIST_FNONH + "=" + paramBean.getfNonh() + "&";
-			url += EXHENTAI_LIST_FIMAGESET + "=" + paramBean.getfImageset() + "&";
-			url += EXHENTAI_LIST_FCOSPLAY + "=" + paramBean.getfCosplay() + "&";
-			url += EXHENTAI_LIST_FASIANPORN + "=" + paramBean.getfAsianporn() + "&";
-			url += EXHENTAI_LIST_FMISC + "=" + paramBean.getfMisc() + "&";
-			url += EXHENTAI_LIST_FSEARCH + "=" + paramBean.getfSearch() + "&";
-			url += EXHENTAI_LIST_FAPPLY + "=" + paramBean.getfApply() + "&";
-			url += EXHENTAI_LIST_ADVSEARCH + "=" + paramBean.getAdvsearch() + "&";
-			url += EXHENTAI_LIST_FSNAME + "=" + paramBean.getfSname() + "&";
-			url += EXHENTAI_LIST_FSTAGS + "=" + paramBean.getfStags() + "&";
-			url += EXHENTAI_LIST_FSRDD + "=" + paramBean.getfSrdd();
+		}
 
-			Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+		//最大页数获取
+		Elements pageTable = document.select(".ptb");
+		int maxPage = 1;
+		if (pageTable != null) {
+			Elements tds = pageTable.select("td");
+			if (tds.size() > 2) {
+				Element maxPageTd = tds.get(tds.size() - 2);
+				String maxPageStr = maxPageTd.select("a").first().html();
+				maxPage = NumberUtils.toInt(maxPageStr, 1);
+			}
+		}
 
-			List<ExHentaiListBO> listBOs = new ArrayList<>();
-			Elements table = document.select(".itg");
-			if (table != null) {
-				Elements trs = table.select("tr");
-				for (Element tr : trs) {
-					try {
-						Elements tds = tr.select("td");
-						if (tds.size() == 0) {
-							continue;
+		model.put(LIST_BO_KEY, listBOs);
+		model.put(MAX_PAGE_KEY, maxPage);
+
+		return model;
+	}
+
+	@Override
+	public Map<String, Object> galleryPage(String url, boolean large, int page) {
+		Map<String, Object> model = new HashMap<>();
+		url += "?p=" + (page - 1);
+		url += "&inline_set=ts_" + (large ? "l" : "m");
+
+		Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+
+		List<ExHentaiGalleryBO> galleryBOs = new ArrayList<>();
+		Elements photos;
+		if (large) {
+			photos = document.select(".gdtl");
+		} else {
+			photos = document.select(".gdtm");
+		}
+		for (Element photo : photos) {
+			Element img = photo.select("img").first();
+
+			String title = img.attr("title");
+			String previewUrl = photo.select("a").first().attr("href");
+
+			String largeImg = null;
+			String smallImg = null;
+			String smallImgPlaceHolder = null;
+			int smallImgXOffset = 0;
+			int smallImgYOffset = 0;
+			if (large) {
+				largeImg = img.attr("src");
+			} else {
+				smallImgPlaceHolder = img.attr("src");
+				Element div = photo.select("div").get(1);
+				String divStyle = div.attr("style");
+				String[] keyValues = divStyle.split(";");
+				for (String keyValueStr : keyValues) {
+					String[] keyValue = keyValueStr.split(":");
+					String key = keyValue[0];
+					if (!key.contains("background")) {
+						continue;
+					}
+					String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+					int index = value.indexOf(" ");
+					int i = 1;
+					int smallImgStart = 0;
+					int smallImgEnd = 0;
+					int xOffsetEnd = 0;
+					int yOffsetEnd = 0;
+					while (index != -1) {
+						switch (i) {
+							case 1:
+								smallImgStart = index;
+								break;
+							case 2:
+								smallImgEnd = index;
+								smallImg = value.substring(smallImgStart, smallImgEnd);
+								smallImg = smallImg.replaceAll("url", "");
+								smallImg = smallImg.replaceAll("[()]", "");
+								smallImg = smallImg.trim();
+								break;
+							case 3:
+								xOffsetEnd = index;
+								String xOffsetStr = value.substring(smallImgEnd, xOffsetEnd);
+								smallImgXOffset = NumberUtils.toInt(xOffsetStr.replaceAll("-|px", "").trim());
+								if (xOffsetStr.contains("-")) {
+									smallImgXOffset = -smallImgXOffset;
+								}
+								break;
+							case 4:
+								yOffsetEnd = index;
+								String yOffsetStr = value.substring(xOffsetEnd, yOffsetEnd);
+								smallImgYOffset = NumberUtils.toInt(yOffsetStr.replaceAll("-|px", "").trim());
+								if (yOffsetStr.contains("-")) {
+									smallImgYOffset = -smallImgYOffset;
+								}
+								break;
+							default:
+								break;
 						}
-						Element tagCell = tds.get(0);
-						Element timeCell = tds.get(1);
-						Element detailCell = tds.get(2);
 
-						String tagImg = tagCell.select("img").attr("src");
-						String time = timeCell.html();
-						String titleAndCoverImg = detailCell.select(".it2").first().html();
-						String bzUrl = detailCell.select(".it5 a").first().attr("href");
-
-						String[] titleAndCoverImgInfo = titleAndCoverImg.split("~");
-						String coverImg;
-						String title;
-						if (titleAndCoverImgInfo.length > 3) {
-							coverImg = "http://" + titleAndCoverImgInfo[1] + "/" + titleAndCoverImgInfo[2];
-							title = titleAndCoverImgInfo[3];
-						} else {
-							Element img = detailCell.select(".it2").select("img").first();
-							coverImg = img.attr("src");
-							title = img.attr("alt");
-						}
-
-						ExHentaiListBO listBO = new ExHentaiListBO();
-						listBO.setTagImg(ImageUrlConverter.convertExhentaiImageUrl(tagImg));
-						listBO.setPublishTime(time);
-						listBO.setCoverImg(ImageUrlConverter.convertExhentaiImageUrl(coverImg));
-						listBO.setTitle(title);
-						listBO.setBzUrl(bzUrl);
-
-						listBOs.add(listBO);
-					} catch (Exception e) {
-						ConsoleLog.e(StackTraceUtil.getStackTrace(e));
+						index = value.indexOf(" ", index + 1);
+						i++;
 					}
 				}
 			}
 
-			Elements pageTable = document.select(".ptb");
-			int maxPage = 1;
-			if (pageTable != null) {
-				Elements tds = pageTable.select("td");
-				if (tds.size() > 2) {
-					Element maxPageTd = tds.get(tds.size() - 2);
-					String maxPageStr = maxPageTd.select("a").first().html();
-					maxPage = NumberUtils.toInt(maxPageStr, 0);
-				}
-			}
-
-			model.put(LIST_BO_KEY, listBOs);
-			model.put(MAX_PAGE_KEY, maxPage);
-
-		} catch (Exception e) {
-			ConsoleLog.e(" - 文档抓取异常", e);
+			ExHentaiGalleryBO galleryBO = new ExHentaiGalleryBO();
+			galleryBO.setLargeImg(largeImg);
+			galleryBO.setSmallImgXOffset(smallImgXOffset);
+			galleryBO.setSmallImgYOffset(smallImgYOffset);
+			galleryBO.setSmallImg(smallImg);
+			galleryBO.setSmallImgPlaceHolder(smallImgPlaceHolder);
+			galleryBO.setTitle(title);
+			galleryBO.setPreviewUrl(previewUrl);
+			galleryBO.setPhotoUrl(previewUrl);
+			galleryBOs.add(galleryBO);
 		}
+
+		//最大页数获取
+		Elements pageTable = document.select(".ptt");
+		Elements pageTd = pageTable.select(".ptds");
+		Element lastPageTd = pageTd.last();
+		Element lastPageA = lastPageTd.select("a").first();
+		String maxPageStr = lastPageA.html();
+		int maxPage = NumberUtils.toInt(maxPageStr, 1);
+
+		model.put(GALLERY_BO_KEY, galleryBOs);
+		model.put(MAX_PAGE_KEY, maxPage);
+		if (!large) {
+			model.put(GALLERY_SMALL_IMG_COUNT_KEY, photos.size());
+		}
+
 		return model;
 	}
 
@@ -176,7 +282,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
 			return data;
 		} catch (IOException ioe) {
-			ConsoleLog.e("访问图片失败 url=" + url, ioe);
+			Log.e("访问图片失败 url=" + url, ioe);
 			return new byte[0];
 		} finally {
 			IOUtils.closeQuietly(inputStream);
@@ -214,7 +320,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return "下载成功！";
 		} catch (Exception e) {
-			ConsoleLog.e(e);
+			Log.e(e);
 			return "下载错误！";
 		}
 	}
@@ -234,7 +340,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 				Elements originImgA = originImgDiv.select("a");
 				if (originImgA != null && originImgA.size() > 0) {
 					downloadSrc = originImgA.first().attr("href");
-					ConsoleLog.e("下载原图 - " + downloadSrc);
+					Log.e("下载原图 - " + downloadSrc);
 				}
 			}
 
@@ -257,7 +363,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return END_OF_GRAB_PAGE;
 		} catch (Exception e) {
-			ConsoleLog.e(e);
+			Log.e(e);
 			return END_OF_GRAB_PAGE;
 		}
 	}

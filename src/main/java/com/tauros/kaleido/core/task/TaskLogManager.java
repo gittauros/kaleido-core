@@ -1,6 +1,6 @@
 package com.tauros.kaleido.core.task;
 
-import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.Log;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -40,7 +40,7 @@ public enum TaskLogManager {
 	private class RunnableLog implements Runnable {
 		@Override
 		public void run() {
-			ConsoleLog.e("监听日志开始");
+			Log.e("监听日志开始");
 			while (!listenerPool.isEmpty()) {
 				StringBuilder logBuilder = new StringBuilder("");
 				int index = 0;
@@ -55,7 +55,7 @@ public enum TaskLogManager {
 					}
 				}
 				if (logBuilder.length() > 0) {
-					ConsoleLog.e(logBuilder.toString());
+					Log.e(logBuilder.toString());
 				}
 				try {
 					Thread.sleep(LOG_SLEEP);
@@ -64,7 +64,7 @@ public enum TaskLogManager {
 					break;
 				}
 			}
-			ConsoleLog.e("监听日志结束");
+			Log.e("监听日志结束");
 		}
 	}
 

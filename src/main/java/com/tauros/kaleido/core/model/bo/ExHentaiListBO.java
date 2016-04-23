@@ -10,6 +10,7 @@ public class ExHentaiListBO {
 	private String tagImg;
 	private String publishTime;
 	private String bzUrl;
+	private String galleryUrl;
 
 	public String getTitle() {
 		return title;
@@ -49,5 +50,13 @@ public class ExHentaiListBO {
 
 	public void setBzUrl(String bzUrl) {
 		this.bzUrl = bzUrl;
+	}
+
+	public String getGalleryUrl() {
+		return galleryUrl;
+	}
+
+	public void setGalleryUrl(String galleryUrl) {
+		this.galleryUrl = galleryUrl;
 	}
 }

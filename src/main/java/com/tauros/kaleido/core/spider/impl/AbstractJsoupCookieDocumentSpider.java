@@ -2,7 +2,7 @@ package com.tauros.kaleido.core.spider.impl;
 
 import com.tauros.kaleido.core.constant.SpiderConstant;
 import com.tauros.kaleido.core.spider.DocumentSpider;
-import com.tauros.kaleido.core.util.ConsoleLog;
+import com.tauros.kaleido.core.util.Log;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -48,7 +48,7 @@ public abstract class AbstractJsoupCookieDocumentSpider implements DocumentSpide
 			Document document = response.parse();
 			return document;
 		} catch (Exception e) {
-			ConsoleLog.e(" - 转换文档失败", e);
+			Log.e(" - 转换文档失败", e);
 			return null;
 		}
 	}
@@ -60,9 +60,9 @@ public abstract class AbstractJsoupCookieDocumentSpider implements DocumentSpide
 				return response;
 			} catch (Exception e) {
 				if (i < RETRY_TIMES) {
-					ConsoleLog.e(" - 重试第" + i + "次, url=" + connection.request().url().toString(), e);
+					Log.e(" - 重试第" + i + "次, url=" + connection.request().url().toString(), e);
 				} else {
-					ConsoleLog.e(" - 重试失败", e);
+					Log.e(" - 重试失败", e);
 				}
 			}
 		}
