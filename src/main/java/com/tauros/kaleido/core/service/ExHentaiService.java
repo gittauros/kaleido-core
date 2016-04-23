@@ -27,6 +27,14 @@ public interface ExHentaiService {
 	Map<String, Object> galleryPage(String url, boolean large, int page);
 
 	/**
+	 * 抓取ex-hentai图片页
+	 *
+	 * @param url
+	 * @return
+	 */
+	Map<String, Object> photoPage(String url);
+
+	/**
 	 * 下载ex-hentai相册页图片
 	 *
 	 * @param saveBasePath

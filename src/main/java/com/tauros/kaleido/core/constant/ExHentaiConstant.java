@@ -29,7 +29,7 @@ public interface ExHentaiConstant {
 	String MAX_PAGE_KEY = "maxPage";
 	String LIST_BO_KEY  = "listBOs";
 	String GALLERY_BO_KEY = "galleryBOs";
-	String GALLERY_SMALL_IMG_COUNT_KEY = "imgCount";
+	String PHOTO_BO_KEY = "photoBO";
 
 	String END_OF_GRAB_PAGE = "翻页结束";
 }

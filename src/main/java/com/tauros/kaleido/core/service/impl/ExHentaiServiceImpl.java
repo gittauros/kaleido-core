@@ -7,6 +7,7 @@ import com.tauros.kaleido.core.download.UrlDownloaderDispatcher;
 import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
 import com.tauros.kaleido.core.model.bo.ExHentaiGalleryBO;
 import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
+import com.tauros.kaleido.core.model.bo.ExHentaiPhotoBO;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
@@ -255,9 +256,48 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 		model.put(GALLERY_BO_KEY, galleryBOs);
 		model.put(MAX_PAGE_KEY, maxPage);
-		if (!large) {
-			model.put(GALLERY_SMALL_IMG_COUNT_KEY, photos.size());
+
+		return model;
+	}
+
+	@Override
+	public Map<String, Object> photoPage(String url) {
+		Map<String, Object> model = new HashMap<>();
+
+		Document document;
+		String html = cacheService.getStringData(CacheTypeConstant.HTML, url);
+		if (html != null) {
+			document = Jsoup.parse(html);
+		} else {
+			document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+			cacheService.putStringData(CacheTypeConstant.HTML, url, document.toString());
 		}
+
+		Element img = document.select("#img").first();
+		String photoImg = img.attr("src");
+
+		Element pageDiv = document.select(".sn").first();
+		Element curPageSpan = pageDiv.select("span").first();
+		Element lastPageSpan = pageDiv.select("span").last();
+		Elements pages = pageDiv.select("a");
+
+		String firstPageUrl = pages.get(0).attr("href");
+		String prevPageUrl = pages.get(1).attr("href");
+		String nextPageUrl = pages.get(2).attr("href");
+		String lastPageUrl = pages.get(3).attr("href");
+		int curPage = NumberUtils.toInt(curPageSpan.html(), 1);
+		int lastPage = NumberUtils.toInt(lastPageSpan.html(), 1);
+
+		ExHentaiPhotoBO photoBO = new ExHentaiPhotoBO();
+		photoBO.setPhotoImg(photoImg);
+		photoBO.setCurPage(curPage);
+		photoBO.setLastPage(lastPage);
+		photoBO.setFirstPageUrl(firstPageUrl);
+		photoBO.setPrevPageUrl(prevPageUrl);
+		photoBO.setNextPageUrl(nextPageUrl);
+		photoBO.setLastPageUrl(lastPageUrl);
+
+		model.put(PHOTO_BO_KEY, photoBO);
 
 		return model;
 	}
@@ -352,7 +392,6 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 					ConsoleLog.e("下载原图 - " + downloadSrc);
 				}
 			}
-
 
 			//开始下载
 			urlDownloaderDispatcher.dispatch(filePath, fileName, downloadSrc, getRequestProperty());
