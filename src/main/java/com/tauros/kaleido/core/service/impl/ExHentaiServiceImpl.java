@@ -177,16 +177,19 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			String smallImgPlaceHolder = null;
 			int smallImgXOffset = 0;
 			int smallImgYOffset = 0;
+			int smallImgWidth = 0;
+			int smallImgHeight = 0;
 			if (large) {
 				largeImg = img.attr("src");
 			} else {
 				smallImgPlaceHolder = img.attr("src");
+
+				//小图背景及偏移量
 				Element div = photo.select("div").get(1);
 				String divStyle = div.attr("style");
 				String[] keyValues = divStyle.split(";");
 				for (String keyValueStr : keyValues) {
-					String[] keyValue = keyValueStr.split(":");
-					String key = keyValue[0];
+					String key = keyValueStr.split(":")[0];
 					if (!key.contains("background")) {
 						continue;
 					}
@@ -212,18 +215,12 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 							case 3:
 								xOffsetEnd = index;
 								String xOffsetStr = value.substring(smallImgEnd, xOffsetEnd);
-								smallImgXOffset = NumberUtils.toInt(xOffsetStr.replaceAll("-|px", "").trim());
-								if (xOffsetStr.contains("-")) {
-									smallImgXOffset = -smallImgXOffset;
-								}
+								smallImgXOffset = NumberUtils.toInt(xOffsetStr.replaceAll("px", "").trim());
 								break;
 							case 4:
 								yOffsetEnd = index;
 								String yOffsetStr = value.substring(xOffsetEnd, yOffsetEnd);
-								smallImgYOffset = NumberUtils.toInt(yOffsetStr.replaceAll("-|px", "").trim());
-								if (yOffsetStr.contains("-")) {
-									smallImgYOffset = -smallImgYOffset;
-								}
+								smallImgYOffset = NumberUtils.toInt(yOffsetStr.replaceAll("px", "").trim());
 								break;
 							default:
 								break;
@@ -233,6 +230,21 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 						i++;
 					}
 				}
+
+				//小图宽高
+				String imgStyle = img.attr("style");
+				keyValues = imgStyle.split(";");
+				for (int i = 0; i < keyValues.length; i++) {
+					String keyValueStr = keyValues[i];
+					String key = keyValueStr.split(":")[0];
+					String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+					int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
+					if (key.contains("width")) {
+						smallImgWidth = valueInt;
+					} else if (key.contains("height")) {
+						smallImgHeight = valueInt;
+					}
+				}
 			}
 
 			ExHentaiGalleryBO galleryBO = new ExHentaiGalleryBO();
@@ -240,6 +252,8 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			galleryBO.setSmallImgXOffset(smallImgXOffset);
 			galleryBO.setSmallImgYOffset(smallImgYOffset);
 			galleryBO.setSmallImg(smallImg);
+			galleryBO.setSmallImgWidth(smallImgWidth);
+			galleryBO.setSmallImgHeight(smallImgHeight);
 			galleryBO.setSmallImgPlaceHolder(smallImgPlaceHolder);
 			galleryBO.setTitle(title);
 			galleryBO.setPreviewUrl(previewUrl);

@@ -10,6 +10,8 @@ public class ExHentaiGalleryBO {
 	private int    smallImgYOffset;
 	private String smallImg;
 	private String smallImgPlaceHolder;
+	private int    smallImgWidth;
+	private int    smallImgHeight;
 	private String largeImg;
 	private String previewUrl;
 	private String photoUrl;
@@ -76,5 +78,21 @@ public class ExHentaiGalleryBO {
 
 	public void setPhotoUrl(String photoUrl) {
 		this.photoUrl = photoUrl;
+	}
+
+	public int getSmallImgWidth() {
+		return smallImgWidth;
+	}
+
+	public void setSmallImgWidth(int smallImgWidth) {
+		this.smallImgWidth = smallImgWidth;
+	}
+
+	public int getSmallImgHeight() {
+		return smallImgHeight;
+	}
+
+	public void setSmallImgHeight(int smallImgHeight) {
+		this.smallImgHeight = smallImgHeight;
 	}
 }
