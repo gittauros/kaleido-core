@@ -6,12 +6,14 @@ package com.tauros.kaleido.core.model.bo;
 public class ExHentaiPhotoBO {
 
 	private String photoImg;
-	private int curPage;
-	private int lastPage;
+	private int    curPage;
+	private int    lastPage;
 	private String firstPageUrl;
 	private String prevPageUrl;
 	private String nextPageUrl;
 	private String lastPageUrl;
+	private int    imgWidth;
+	private int    imgHeight;
 
 	public String getPhotoImg() {
 		return photoImg;
@@ -67,5 +69,21 @@ public class ExHentaiPhotoBO {
 
 	public void setLastPageUrl(String lastPageUrl) {
 		this.lastPageUrl = lastPageUrl;
+	}
+
+	public int getImgWidth() {
+		return imgWidth;
+	}
+
+	public void setImgWidth(int imgWidth) {
+		this.imgWidth = imgWidth;
+	}
+
+	public int getImgHeight() {
+		return imgHeight;
+	}
+
+	public void setImgHeight(int imgHeight) {
+		this.imgHeight = imgHeight;
 	}
 }

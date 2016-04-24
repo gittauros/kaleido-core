@@ -276,6 +276,23 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 		Element img = document.select("#img").first();
 		String photoImg = img.attr("src");
 
+		int imgWidth = 0;
+		int imgHeight = 0;
+		String imgStyle = img.attr("style");
+		String[] keyValues = imgStyle.split(";");
+		for (int i = 0; i < keyValues.length; i++) {
+			String keyValueStr = keyValues[i];
+			String[] keyValue = keyValueStr.split(":");
+			String key = keyValue[0];
+			String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+			int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
+			if (key.contains("width")) {
+				imgWidth = valueInt;
+			} else if (key.contains("height")) {
+				imgHeight = valueInt;
+			}
+		}
+
 		Element pageDiv = document.select(".sn").first();
 		Element curPageSpan = pageDiv.select("span").first();
 		Element lastPageSpan = pageDiv.select("span").last();
@@ -296,6 +313,8 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 		photoBO.setPrevPageUrl(prevPageUrl);
 		photoBO.setNextPageUrl(nextPageUrl);
 		photoBO.setLastPageUrl(lastPageUrl);
+		photoBO.setImgWidth(imgWidth);
+		photoBO.setImgHeight(imgHeight);
 
 		model.put(PHOTO_BO_KEY, photoBO);
 
