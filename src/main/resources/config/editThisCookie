@@ -1,0 +1,143 @@
+__utmz							    185428086.1448776649.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)
+ipb_pass_hash						455815f3429e5b1382d41e9b7d3b50d4
+s									b79a5cc244d60f4bb035dfffe9aae4217c34f547c8625f35d34369c96243bec30c00a0e88b64dc3d9c9eba3eb48f2fbc8fe47b0fe24bb05dbbf01d3f3ddd3587
+igneous								4861c41adf496a2c27443eb9376c131c29add7523c20d436a5404eb5e3986f2843162c1b3dc1ec0fdc954e1cee57cde90e4d113d4b272eb38df2b4fccdff7ddd
+ipb_member_id						1599448
+lv									1460212156-1462194773
+event								1448776679
+__utma								185428086.917164177.1448776649.1448776649.1448776649.1
+uconfig								uh_y-rc_0-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0-rx_0-ry_0-ms_n-mt_n-cs_a-to_a-pn_0-sc_0-lt_m-tl_r-fs_p-ru_rrggb-xr_a-sa_y-oi_n-qb_n-tf_n-hp_-hk_-xl_
+
+
+[
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731500,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "__utma",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "185428086.917164177.1448776649.1448776649.1448776649.1",
+    "id": 1
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731320,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "__utmz",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "185428086.1448776649.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)",
+    "id": 2
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731440,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "event",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "1448776679",
+    "id": 3
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731440,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "igneous",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "4861c41adf496a2c27443eb9376c131c29add7523c20d436a5404eb5e3986f2843162c1b3dc1ec0fdc954e1cee57cde90e4d113d4b272eb38df2b4fccdff7ddd",
+    "id": 4
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731440,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "ipb_member_id",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "1599448",
+    "id": 5
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731380,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "ipb_pass_hash",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "455815f3429e5b1382d41e9b7d3b50d4",
+    "id": 6
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731440,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "lv",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "1460212156-1462194773",
+    "id": 7
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731380,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "s",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "b79a5cc244d60f4bb035dfffe9aae4217c34f547c8625f35d34369c96243bec30c00a0e88b64dc3d9c9eba3eb48f2fbc8fe47b0fe24bb05dbbf01d3f3ddd3587",
+    "id": 8
+},
+{
+    "domain": ".exhentai.org",
+    "expirationDate": 1493731546.700442,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "uconfig",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "uh_y-rc_0-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0-rx_0-ry_0-ms_n-mt_n-cs_a-to_a-pn_0-sc_0-lt_m-tl_r-fs_p-ru_rrggb-xr_a-sa_y-oi_n-qb_n-tf_n-hp_-hk_-xl_",
+    "id": 9
+},
+{
+    "domain": "exhentai.org",
+    "expirationDate": 1493731546.700608,
+    "hostOnly": true,
+    "httpOnly": false,
+    "name": "lv",
+    "path": "/",
+    "secure": false,
+    "session": false,
+    "storeId": "0",
+    "value": "1460212156-1462195548",
+    "id": 10
+}
+]
