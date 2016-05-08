@@ -354,14 +354,28 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			inputStream = connection.getInputStream();
 			byteArrayOutputStream = new ByteArrayOutputStream();
+
+			boolean chunked;
+			long contentLength = 0;
+			long processLength = 0;
+			if("chunked".equals(connection.getHeaderField("Transfer-Encoding"))) {
+				chunked = true;
+			} else {
+				chunked = false;
+				contentLength = connection.getContentLengthLong();
+			}
+
 			int count;
 			byte[] buffer = new byte[BUFFER_SIZE];
 			while ((count = inputStream.read(buffer)) != -1) {
 				byteArrayOutputStream.write(buffer, 0, count);
+				processLength += count;
 			}
 
 			data = byteArrayOutputStream.toByteArray();
-			cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
+			if (!chunked && processLength == contentLength) {
+				cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
+			}
 			return data;
 		} catch (IOException ioe) {
 			ConsoleLog.e("访问图片失败 url=" + url, ioe);
