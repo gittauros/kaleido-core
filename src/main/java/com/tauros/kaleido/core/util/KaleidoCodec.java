@@ -57,7 +57,7 @@ public class KaleidoCodec {
 		private char[] characters;
 		private byte[] characterIndex;
 
-		Base64(char[] characters) {
+		private Base64(char[] characters) {
 			this.characters = characters;
 			char max = Character.MIN_VALUE;
 			for (char character : this.characters) {
