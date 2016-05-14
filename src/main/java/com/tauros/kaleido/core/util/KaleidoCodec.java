@@ -72,7 +72,21 @@ public class KaleidoCodec {
 			}
 		}
 
-		public char[] translate(byte[] source) {
+		public byte[] translate2ByteArray(byte[] source) {
+			Asserts.notNull(source, "source is null");
+			byte[] res = new byte[source.length];
+			for (int i = 0; i < source.length; i++) {
+				byte index = source[i];
+				if (index == -1) {
+					res[i] = '=';
+				} else {
+					res[i] = (byte) this.characters[index];
+				}
+			}
+			return res;
+		}
+
+		public char[] translate2CharArray(byte[] source) {
 			Asserts.notNull(source, "source is null");
 			char[] res = new char[source.length];
 			for (int i = 0; i < source.length; i++) {
@@ -117,13 +131,13 @@ public class KaleidoCodec {
 		public char[] encodeAndTranslate(byte[] source) throws KaleidoEncodeException {
 			Asserts.notNull(source, "source is null");
 			byte[] target = encode(source);
-			return translate(target);
+			return translate2CharArray(target);
 		}
 
 		public String encodeAndTranslateToString(byte[] source) throws KaleidoEncodeException {
 			Asserts.notNull(source, "source is null");
 			byte[] target = encode(source);
-			return new String(translate(target));
+			return new String(translate2CharArray(target));
 		}
 
 		public byte[] decodeWithInverseTranslate(byte[] source) throws KaleidoDecodeException {
@@ -259,7 +273,7 @@ public class KaleidoCodec {
 			Asserts.notNull(source, "source is null");
 			byte[] byteSource = string2ByteArray(source);
 			byte[] byteTarget = encode(byteSource);
-			char[] charTarget = translate(byteTarget);
+			char[] charTarget = translate2CharArray(byteTarget);
 			return new String(charTarget);
 		}
 
@@ -275,7 +289,7 @@ public class KaleidoCodec {
 			Asserts.notNull(source, "source is null");
 			byte[] byteSource = charArray2ByteArray(source);
 			byte[] byteTarget = encode(byteSource);
-			return translate(byteTarget);
+			return translate2CharArray(byteTarget);
 		}
 
 		public char[] decode(char[] source) throws KaleidoDecodeException {
