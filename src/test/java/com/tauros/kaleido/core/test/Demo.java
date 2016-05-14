@@ -17,7 +17,7 @@ public class Demo implements Serializable {
 	static KaleidoCache<String, byte[]> cache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, (obj) -> obj.length);
 
 	public static void main(String[] args) throws Exception {
-		String str = "http://tool.chinaz.com/Tools/Base64.aspx";
+		String str = "a";
 
 		for (int i = 0;i < 2; i ++) {
 			str = encode(str);

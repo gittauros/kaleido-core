@@ -174,9 +174,7 @@ public class KaleidoCodec {
 			Asserts.notNull(source, "source is null");
 
 			byte[] target = new byte[(source.length + 2) / 3 * 4];
-			for (int i = 0; i < target.length; i++) {
-				target[i] = -1;
-			}
+			Arrays.fill(target, (byte) -1);
 			int pos = 0;
 			for (int i = 0; i < source.length; ) {
 				byte first = source[i++];
