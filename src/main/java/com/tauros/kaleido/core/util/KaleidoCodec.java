@@ -166,7 +166,7 @@ public class KaleidoCodec {
 				}
 			}
 
-			return target;
+			return Arrays.copyOf(target, pos);
 		}
 
 		@Override
