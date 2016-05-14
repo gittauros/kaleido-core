@@ -17,8 +17,7 @@ public class Demo implements Serializable {
 	static KaleidoCache<String, byte[]> cache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, (obj) -> obj.length);
 
 	public static void main(String[] args) throws Exception {
-		String str = "\n" +
-		             "時光守護者 宅宅（JJ）林時光守護者 宅宅（JJ）林林俊杰1135549\n" +
+		String str = "時光守護者 宅宅（JJ）林時光守護者 宅宅（JJ）林林俊杰1135549\n" +
 		             "今天7点半解说下B组LTZvsAI今天7点半解说下B组LTZvsAI伍声2009204388\n" +
 		             "大家好，我叫de yi ao大家好，我叫de yi aoZhou陈尧42135\n" +
 		             "Axx：需要你，我是一直鱼，欧巴Axx：需要你，我是一直鱼，欧巴阿夏夏12017\n" +
@@ -39,9 +38,17 @@ public class Demo implements Serializable {
 		             "IMBA期待被虐 包鸟眼的寂寞谁能懂IMBA期待被虐 包鸟眼的寂寞谁能懂汨罗张学友72\n" +
 		             "武陵阿姨的首播~人数到了跳舞走起来A";
 
-		String str2 = KaleidoCodec.Base64.NORMAL.encode(str);
+		String str2 = new String(KaleidoCodec.Base64.NORMAL.encodeAndTranslate(str.getBytes()));
 		System.out.println(str2);
 
-		System.out.println(KaleidoCodec.Base64.NORMAL.decode(str2));
+		System.out.println("");
+		System.out.println(KaleidoCodec.Base64.NORMAL.encode(str));
+
+		System.out.println("");
+		System.out.println(KaleidoCodec.Base64.NORMAL.decode(KaleidoCodec.Base64.NORMAL.encode(str)));
+
+		System.out.println("");
+
+		System.out.println(new String(KaleidoCodec.Base64.NORMAL.decodeStringWithInverseTranslate(str2)));
 	}
 }

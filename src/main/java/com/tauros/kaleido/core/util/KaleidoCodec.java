@@ -100,6 +100,20 @@ public class KaleidoCodec {
 			return res;
 		}
 
+		public byte[] inverseTranslate(byte[] source) {
+			Asserts.notNull(source, "source is null");
+			byte[] res = new byte[source.length];
+			for (int i = 0; i < source.length; i++) {
+				byte character = source[i];
+				if (character == '=') {
+					res[i] = -1;
+				} else {
+					res[i] = this.characterIndex[character];
+				}
+			}
+			return res;
+		}
+
 		public char[] encodeAndTranslate(byte[] source) throws KaleidoEncodeException {
 			Asserts.notNull(source, "source is null");
 			byte[] target = encode(source);
@@ -112,22 +126,38 @@ public class KaleidoCodec {
 			return new String(translate(target));
 		}
 
+		public byte[] decodeWithInverseTranslate(byte[] source) throws KaleidoDecodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] target = inverseTranslate(source);
+			return decode(target);
+		}
+
+		public byte[] decodeStringWithInverseTranslate(String source) throws KaleidoDecodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] byteSource = source.getBytes();
+			byte[] target     = inverseTranslate(byteSource);
+			return decode(target);
+		}
+
 		@Override
 		public byte[] decode(byte[] source) throws KaleidoDecodeException {
 			Asserts.notNull(source, "source is null");
-			if (source.length % 4 != 0) {
-				throw new KaleidoDecodeException("invalid source length, source.length=" + source.length);
-			}
+//			if (source.length % 4 != 0) {
+//				throw new KaleidoDecodeException("invalid source length, source.length=" + source.length);
+//			}
 
-			byte[]  target    = new byte[(source.length + 3) / 4 * 3];
-			int     pos       = 0;
-			byte    sourceByte;
+			byte[] target = new byte[(source.length + 3) / 4 * 3];
+			int    pos    = 0;
+			byte   sourceByte;
 			for (int i = 0; i < source.length; ) {
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
 					break;
 				}
 
+				if (i >= source.length) {
+					break;
+				}
 				byte first = (byte) ((sourceByte & D_FIRST_SIX) << 2);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
@@ -136,6 +166,9 @@ public class KaleidoCodec {
 				first = (byte) (first | (sourceByte & D_SECOND_PRE_FOUR) >>> 4 & D_SECOND_PRE_FOUR_TWO);
 				target[pos++] = first;
 
+				if (i >= source.length) {
+					break;
+				}
 				byte mid = (byte) ((sourceByte & D_SECOND_SUF_FOUR) << 4);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
@@ -144,6 +177,9 @@ public class KaleidoCodec {
 				mid = (byte) (mid | (sourceByte & D_THIRD_PRE_SIX) >>> 2 & D_THIRD_PRE_SIX_FOUR);
 				target[pos++] = mid;
 
+				if (i >= source.length) {
+					break;
+				}
 				byte last = (byte) ((sourceByte & D_THIRD_SUF_TWO) << 6);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
