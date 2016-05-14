@@ -5,7 +5,10 @@ import com.tauros.kaleido.core.exception.KaleidoEncodeException;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.util.Asserts;
 
-import java.io.*;
+import java.io.CharArrayWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 
 /**
@@ -95,6 +98,18 @@ public class KaleidoCodec {
 				}
 			}
 			return res;
+		}
+
+		public char[] encodeAndTranslate(byte[] source) throws KaleidoEncodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] target = encode(source);
+			return translate(target);
+		}
+
+		public String encodeAndTranslateToString(byte[] source) throws KaleidoEncodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] target = encode(source);
+			return new String(translate(target));
 		}
 
 		@Override
