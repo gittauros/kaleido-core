@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.util.Asserts;
 
 import java.io.*;
-import java.nio.CharBuffer;
 import java.util.Arrays;
 
 /**
@@ -20,11 +19,11 @@ public class KaleidoCodec {
 	private static final int LOW_8  = 0x000000FF;
 	private static final int HIGH_8 = 0x0000FF00;
 
-	private static char[] url_base64_characters = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+	private static char[] base64_url_characters = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	                                                         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 	                                                         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'};
 
-	private static char[] normal_base64_characters = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+	private static char[] base64_normal_characters = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
 	                                                            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 	                                                            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
 
@@ -33,8 +32,8 @@ public class KaleidoCodec {
 	 */
 	public enum Base64 implements BinaryEncoder, BinaryDecoder {
 
-		URL(url_base64_characters),
-		NORMAL(normal_base64_characters);
+		URL(base64_url_characters),
+		NORMAL(base64_normal_characters);
 
 		private static final int E_FIRST_HEAD = 0xFC;
 		private static final int E_FIRST_END  = 0x3;
@@ -46,11 +45,11 @@ public class KaleidoCodec {
 		private static final int D_FIRST_SIX           = 0x3F;
 		private static final int D_SECOND_PRE_FOUR     = 0xF0;
 		private static final int D_SECOND_PRE_FOUR_TWO = 0x3;
-		private static final int D_SECOND_SUF_FOUR    = 0x0F;
-		private static final int D_THIRD_PRE_SIX      = 0xFC;
-		private static final int D_THIRD_PRE_SIX_FOUR = 0xF;
-		private static final int D_THIRD_SUF_TWO  = 0x3;
-		private static final int D_FOURTH_SUF_SIX = 0x3F;
+		private static final int D_SECOND_SUF_FOUR     = 0x0F;
+		private static final int D_THIRD_PRE_SIX       = 0xFC;
+		private static final int D_THIRD_PRE_SIX_FOUR  = 0xF;
+		private static final int D_THIRD_SUF_TWO       = 0x3;
+		private static final int D_FOURTH_SUF_SIX      = 0x3F;
 
 		private char[] characters;
 		private byte[] characterIndex;
@@ -105,9 +104,9 @@ public class KaleidoCodec {
 				throw new KaleidoDecodeException("invalid source length, source.length=" + source.length);
 			}
 
-			byte[] target = new byte[(source.length + 3) / 4 * 3];
-			int pos = 0;
-			byte sourceByte;
+			byte[]  target    = new byte[(source.length + 3) / 4 * 3];
+			int     pos       = 0;
+			byte    sourceByte;
 			boolean breakFlag = false;
 			for (int i = 0; i < source.length; ) {
 				sourceByte = source[i++];
@@ -257,7 +256,7 @@ public class KaleidoCodec {
 			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
 			char[] newSource = Arrays.copyOf(source, length);
 			System.arraycopy(source, pos, newSource, 0, length);
-			char[] target = encode(newSource);
+			char[] target    = encode(newSource);
 			char[] newTarget = Arrays.copyOf(source, source.length - length + target.length);
 			System.arraycopy(newTarget, pos + length, newTarget, pos + target.length, source.length - length - pos);
 			System.arraycopy(target, 0, newTarget, pos, target.length);
@@ -268,7 +267,7 @@ public class KaleidoCodec {
 			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
 			char[] newSource = Arrays.copyOf(source, length);
 			System.arraycopy(source, pos, newSource, 0, length);
-			char[] target = decode(newSource);
+			char[] target    = decode(newSource);
 			char[] newTarget = Arrays.copyOf(target, source.length - length + target.length);
 			System.arraycopy(source, 0, newTarget, 0, pos);
 			System.arraycopy(source, pos + length, newTarget, pos + target.length, source.length - pos - length);
@@ -280,7 +279,7 @@ public class KaleidoCodec {
 			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
 			byte[] newSource = Arrays.copyOf(source, length);
 			System.arraycopy(source, pos, newSource, 0, length);
-			byte[] target = encode(newSource);
+			byte[] target    = encode(newSource);
 			byte[] newTarget = Arrays.copyOf(source, source.length - length + target.length);
 			System.arraycopy(newTarget, pos + length, newTarget, pos + target.length, source.length - length - pos);
 			System.arraycopy(target, 0, newTarget, pos, target.length);
@@ -291,7 +290,7 @@ public class KaleidoCodec {
 			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
 			byte[] newSource = Arrays.copyOf(source, length);
 			System.arraycopy(source, pos, newSource, 0, length);
-			byte[] target = decode(newSource);
+			byte[] target    = decode(newSource);
 			byte[] newTarget = Arrays.copyOf(target, source.length - length + target.length);
 			System.arraycopy(source, 0, newTarget, 0, pos);
 			System.arraycopy(source, pos + length, newTarget, pos + target.length, source.length - pos - length);
@@ -337,7 +336,7 @@ public class KaleidoCodec {
 
 	public static byte[] charArray2ByteArray(char[] chars) {
 		Asserts.notNull(chars, "char array is null");
-		byte[] res   = new byte[chars.length << 1];
+		byte[] res = new byte[chars.length << 1];
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			res[i << 1] = getCharHighByte(c);
