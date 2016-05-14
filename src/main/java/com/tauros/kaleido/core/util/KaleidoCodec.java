@@ -46,11 +46,9 @@ public class KaleidoCodec {
 		private static final int D_FIRST_SIX           = 0x3F;
 		private static final int D_SECOND_PRE_FOUR     = 0xF0;
 		private static final int D_SECOND_PRE_FOUR_TWO = 0x3;
-
 		private static final int D_SECOND_SUF_FOUR    = 0x0F;
 		private static final int D_THIRD_PRE_SIX      = 0xFC;
 		private static final int D_THIRD_PRE_SIX_FOUR = 0xF;
-
 		private static final int D_THIRD_SUF_TWO  = 0x3;
 		private static final int D_FOURTH_SUF_SIX = 0x3F;
 
