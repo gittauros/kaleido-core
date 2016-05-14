@@ -122,7 +122,6 @@ public class KaleidoCodec {
 			byte[]  target    = new byte[(source.length + 3) / 4 * 3];
 			int     pos       = 0;
 			byte    sourceByte;
-			boolean breakFlag = false;
 			for (int i = 0; i < source.length; ) {
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
@@ -132,38 +131,26 @@ public class KaleidoCodec {
 				byte first = (byte) ((sourceByte & D_FIRST_SIX) << 2);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
-					sourceByte = 0;
-					breakFlag = true;
+					break;
 				}
 				first = (byte) (first | (sourceByte & D_SECOND_PRE_FOUR) >>> 4 & D_SECOND_PRE_FOUR_TWO);
 				target[pos++] = first;
-				if (breakFlag) {
-					break;
-				}
 
 				byte mid = (byte) ((sourceByte & D_SECOND_SUF_FOUR) << 4);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
-					sourceByte = 0;
-					breakFlag = true;
+					break;
 				}
 				mid = (byte) (mid | (sourceByte & D_THIRD_PRE_SIX) >>> 2 & D_THIRD_PRE_SIX_FOUR);
 				target[pos++] = mid;
-				if (breakFlag) {
-					break;
-				}
 
 				byte last = (byte) ((sourceByte & D_THIRD_SUF_TWO) << 6);
 				sourceByte = source[i++];
 				if (sourceByte == -1) {
-					sourceByte = 0;
-					breakFlag = true;
+					break;
 				}
 				last = (byte) (last | sourceByte & D_FOURTH_SUF_SIX);
 				target[pos++] = last;
-				if (breakFlag) {
-					break;
-				}
 			}
 
 			return Arrays.copyOf(target, pos);
