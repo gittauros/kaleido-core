@@ -6,6 +6,8 @@ import org.apache.http.util.Asserts;
 
 import java.io.Serializable;
 
+import static com.tauros.kaleido.core.util.KaleidoCodec.*;
+
 /**
  * Created by tauros on 2016/4/9.
  */
@@ -13,22 +15,35 @@ public class Demo implements Serializable {
 	private static final long serialVersionUID = -2777120453873339539L;
 
 	static KaleidoCache<String, byte[]> cache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, (obj) -> obj.length);
+	public static byte[] bytes;
 
 	public static void main(String[] args) throws Exception {
 //		cache.put("zhy", new byte[]{1});
 //		System.out.println(cache.get("zhy"));
 		String str = "http://exhentai.org/g/876856/8ecfc6e3e3/";
 		String str2 = "http://exhentai.org/g/702219/30151902b0/";
-		System.out.println(encodeASCII2String(str));
-		System.out.println(encode2String(str));
+//		System.out.println(encodeASCII2String(str));
+//		System.out.println(encode2String(str));
+
+		int TIMES = 1000000;
 
 		String encode = "\n";
 		long time = System.currentTimeMillis();
-		for (int i = 0; i < 1000000; i++) {
-			encode = encode2String((i & 1) == 1 ? str : str2);
+		for (int i = 0; i < TIMES; i++) {
+			encode = Base64.URL.encode((i & 1) == 1 ? str : str2);
 		}
 		System.out.println(System.currentTimeMillis() - time);
 		System.out.println(encode);
+
+		bytes = string2ByteArray(str);
+
+		String decode = "\n";
+		time = System.currentTimeMillis();
+		for (int i = 0; i < TIMES; i++) {
+			decode = Base64.URL.decode(encode);
+		}
+		System.out.println(System.currentTimeMillis() - time);
+		System.out.println(decode);
 	}
 
 	public static String printBinBytes(byte[] bytes) {

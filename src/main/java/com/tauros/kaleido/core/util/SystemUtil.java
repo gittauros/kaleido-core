@@ -8,7 +8,7 @@ import java.io.*;
 /**
  * Created by tauros on 2016/4/10.
  */
-public final class SystemUtils {
+public final class SystemUtil {
 
 	/**
 	 * 获取用户文件夹路径

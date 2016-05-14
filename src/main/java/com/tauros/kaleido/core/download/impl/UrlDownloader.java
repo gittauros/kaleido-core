@@ -7,7 +7,7 @@ import com.tauros.kaleido.core.exception.KaleidoException;
 import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
 import com.tauros.kaleido.core.task.impl.SimpleTaskStatusListener;
 import com.tauros.kaleido.core.util.ConsoleLog;
-import com.tauros.kaleido.core.util.HttpUtils;
+import com.tauros.kaleido.core.util.HttpUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -156,8 +156,8 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				}
 			}
 
-			URLConnection connection = HttpUtils.openConnection(this.url);
-			HttpUtils.setRequestProperty(connection, requestProperty);
+			URLConnection connection = HttpUtil.openConnection(this.url);
+			HttpUtil.setRequestProperty(connection, requestProperty);
 			inputStream = connection.getInputStream();
 			updateStatus("成功获取网络输入流");
 			bufferedInputStream = new BufferedInputStream(inputStream, BUFFER_SIZE);

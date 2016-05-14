@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by tauros on 2016/4/10.
  */
-public final class HttpUtils {
+public final class HttpUtil {
 
 	private static final int CONNECTION_TIMEOUT = 6000;
 	private static final int READ_TIMEOUT = 50000;

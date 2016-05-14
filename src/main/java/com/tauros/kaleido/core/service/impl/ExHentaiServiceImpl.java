@@ -12,7 +12,7 @@ import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
 import com.tauros.kaleido.core.util.ConsoleLog;
-import com.tauros.kaleido.core.util.HttpUtils;
+import com.tauros.kaleido.core.util.HttpUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.math.NumberUtils;
@@ -349,8 +349,8 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 		InputStream inputStream = null;
 		ByteArrayOutputStream byteArrayOutputStream = null;
 		try {
-			URLConnection connection = HttpUtils.openConnection(url);
-			HttpUtils.setRequestProperty(connection, getRequestProperty());
+			URLConnection connection = HttpUtil.openConnection(url);
+			HttpUtil.setRequestProperty(connection, getRequestProperty());
 
 			inputStream = connection.getInputStream();
 			byteArrayOutputStream = new ByteArrayOutputStream();
