@@ -16,7 +16,7 @@ import java.util.Arrays;
  * <p>
  * Created by tauros on 2016/5/14.
  */
-public class KaleidoCodec {
+public final class KaleidoCodec {
 
 	private static final int LOW_8  = 0x000000FF;
 	private static final int HIGH_8 = 0x0000FF00;
