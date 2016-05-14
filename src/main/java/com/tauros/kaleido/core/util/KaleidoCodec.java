@@ -2,7 +2,12 @@ package com.tauros.kaleido.core.util;
 
 import com.tauros.kaleido.core.exception.KaleidoDecodeException;
 import com.tauros.kaleido.core.exception.KaleidoEncodeException;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.util.Asserts;
+
+import java.io.*;
+import java.nio.CharBuffer;
+import java.util.Arrays;
 
 /**
  * kaleido 编码/解码工具
@@ -61,9 +66,7 @@ public class KaleidoCodec {
 				}
 			}
 			this.characterIndex = new byte[max + 1];
-			for (int i = 0; i < this.characterIndex.length; i++) {
-				this.characterIndex[i] = Character.MIN_VALUE;
-			}
+			Arrays.fill(this.characterIndex, Byte.MIN_VALUE);
 			for (byte i = 0; i < this.characters.length; i++) {
 				this.characterIndex[this.characters[i]] = i;
 			}
@@ -204,8 +207,10 @@ public class KaleidoCodec {
 				return decode((byte[]) source);
 			} else if (source instanceof String) {
 				return decode((String) source);
+			} else if (source instanceof char[]) {
+				return decode((char[]) source);
 			}
-			throw new KaleidoDecodeException("source is not a byte[] or a String");
+			throw new KaleidoDecodeException("source is not a byte[], a char[] or a String");
 		}
 
 		@Override
@@ -214,11 +219,14 @@ public class KaleidoCodec {
 				return encode((byte[]) source);
 			} else if (source instanceof String) {
 				return encode((String) source);
+			} else if (source instanceof char[]) {
+				return encode((char[]) source);
 			}
-			throw new KaleidoEncodeException("source is not a byte[] or a String");
+			throw new KaleidoEncodeException("source is not a byte[], a char[] or a String");
 		}
 
 		public String encode(String source) throws KaleidoEncodeException {
+			Asserts.notNull(source, "source is null");
 			byte[] byteSource = string2ByteArray(source);
 			byte[] byteTarget = encode(byteSource);
 			char[] charTarget = translate(byteTarget);
@@ -226,17 +234,111 @@ public class KaleidoCodec {
 		}
 
 		public String decode(String source) throws KaleidoDecodeException {
+			Asserts.notNull(source, "source is null");
 			char[] charSource = source.toCharArray();
 			byte[] byteSource = inverseTranslate(charSource);
 			byte[] byteTarget = decode(byteSource);
 			return byteArray2String(byteTarget);
 		}
 
+		public char[] encode(char[] source) throws KaleidoEncodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] byteSource = charArray2ByteArray(source);
+			byte[] byteTarget = encode(byteSource);
+			return translate(byteTarget);
+		}
+
+		public char[] decode(char[] source) throws KaleidoDecodeException {
+			Asserts.notNull(source, "source is null");
+			byte[] byteSource = inverseTranslate(source);
+			byte[] byteTarget = decode(byteSource);
+			return byteArray2CharArray(byteTarget);
+		}
+
+		public char[] encode(char[] source, int pos, int length) throws KaleidoEncodeException {
+			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
+			char[] newSource = Arrays.copyOf(source, length);
+			System.arraycopy(source, pos, newSource, 0, length);
+			char[] target = encode(newSource);
+			char[] newTarget = Arrays.copyOf(source, source.length - length + target.length);
+			System.arraycopy(newTarget, pos + length, newTarget, pos + target.length, source.length - length - pos);
+			System.arraycopy(target, 0, newTarget, pos, target.length);
+			return newTarget;
+		}
+
+		public char[] decode(char[] source, int pos, int length) throws KaleidoDecodeException {
+			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
+			char[] newSource = Arrays.copyOf(source, length);
+			System.arraycopy(source, pos, newSource, 0, length);
+			char[] target = decode(newSource);
+			char[] newTarget = Arrays.copyOf(target, source.length - length + target.length);
+			System.arraycopy(source, 0, newTarget, 0, pos);
+			System.arraycopy(source, pos + length, newTarget, pos + target.length, source.length - pos - length);
+			System.arraycopy(target, 0, newTarget, pos, target.length);
+			return newTarget;
+		}
+
+		public byte[] encode(byte[] source, int pos, int length) throws KaleidoEncodeException {
+			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
+			byte[] newSource = Arrays.copyOf(source, length);
+			System.arraycopy(source, pos, newSource, 0, length);
+			byte[] target = encode(newSource);
+			byte[] newTarget = Arrays.copyOf(source, source.length - length + target.length);
+			System.arraycopy(newTarget, pos + length, newTarget, pos + target.length, source.length - length - pos);
+			System.arraycopy(target, 0, newTarget, pos, target.length);
+			return newTarget;
+		}
+
+		public byte[] decode(byte[] source, int pos, int length) throws KaleidoDecodeException {
+			Asserts.check(source != null && source.length >= pos + length, "source is null or out of bound");
+			byte[] newSource = Arrays.copyOf(source, length);
+			System.arraycopy(source, pos, newSource, 0, length);
+			byte[] target = decode(newSource);
+			byte[] newTarget = Arrays.copyOf(target, source.length - length + target.length);
+			System.arraycopy(source, 0, newTarget, 0, pos);
+			System.arraycopy(source, pos + length, newTarget, pos + target.length, source.length - pos - length);
+			System.arraycopy(target, 0, newTarget, pos, target.length);
+			return newTarget;
+		}
+
+		public StringReader encode(Reader reader) throws KaleidoEncodeException, IOException {
+			CharArrayWriter caw = null;
+			try {
+				caw = new CharArrayWriter();
+
+				char[] buffer = new char[150];
+				int    count;
+				while ((count = reader.read(buffer)) != -1) {
+					char[] encoded = encode(buffer, 0, count);
+					caw.write(encoded, 0, encoded.length - (buffer.length - count));
+				}
+
+				return new StringReader(caw.toString());
+			} finally {
+				IOUtils.closeQuietly(caw);
+			}
+		}
+
+		public StringReader decode(Reader reader) throws KaleidoDecodeException, IOException {
+			CharArrayWriter caw = null;
+			try {
+				caw = new CharArrayWriter();
+
+				char[] buffer = new char[200];
+				int    count;
+				while ((count = reader.read(buffer)) != -1) {
+					caw.write(buffer, 0, count);
+				}
+
+				return new StringReader(decode(caw.toString()));
+			} finally {
+				IOUtils.closeQuietly(caw);
+			}
+		}
 	}
 
-	public static byte[] string2ByteArray(String str) {
-		Asserts.notNull(str, "str is null");
-		char[] chars = str.toCharArray();
+	public static byte[] charArray2ByteArray(char[] chars) {
+		Asserts.notNull(chars, "char array is null");
 		byte[] res   = new byte[chars.length << 1];
 		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
@@ -246,7 +348,13 @@ public class KaleidoCodec {
 		return res;
 	}
 
-	public static String byteArray2String(byte[] bytes) {
+	public static byte[] string2ByteArray(String str) {
+		Asserts.notNull(str, "str is null");
+		char[] chars = str.toCharArray();
+		return charArray2ByteArray(chars);
+	}
+
+	public static char[] byteArray2CharArray(byte[] bytes) {
 		Asserts.notNull(bytes, "byte array is null");
 		char[] chars = new char[bytes.length >> 1];
 		int    temp  = 0;
@@ -258,7 +366,12 @@ public class KaleidoCodec {
 				chars[i >> 1] = (char) temp;
 			}
 		}
+		return chars;
+	}
 
+	public static String byteArray2String(byte[] bytes) {
+		Asserts.notNull(bytes, "byte array is null");
+		char[] chars = byteArray2CharArray(bytes);
 		return new String(chars);
 	}
 

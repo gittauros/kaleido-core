@@ -2,9 +2,16 @@ package com.tauros.kaleido.core.test;
 
 import com.tauros.kaleido.core.cache.KaleidoCache;
 import com.tauros.kaleido.core.cache.SizeUnit;
+import com.tauros.kaleido.core.util.KaleidoCodec;
+import org.apache.commons.codec.binary.*;
 import org.apache.http.util.Asserts;
+import org.apache.http.util.LangUtils;
 
-import java.io.Serializable;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 import static com.tauros.kaleido.core.util.KaleidoCodec.*;
 
@@ -17,26 +24,31 @@ public class Demo implements Serializable {
 	static KaleidoCache<String, byte[]> cache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, (obj) -> obj.length);
 
 	public static void main(String[] args) throws Exception {
-		String str = "http://exhentai.org/g/876856/8ecfc6e3e3/";
-		String str2 = "http://exhentai.org/g/702219/30151902b0/";
+		FileReader reader = new FileReader("C:/Users/Administrator/Desktop/read.txt");
+		StringReader stringReader = KaleidoCodec.Base64.NORMAL.encode(reader);
 
-		int TIMES = 1000000;
-
-		String encode = "\n";
-		long time = System.currentTimeMillis();
-		for (int i = 0; i < TIMES; i++) {
-			encode = Base64.URL.encode((i & 1) == 1 ? str : str2);
+		int c;
+		File encodedFile = new File("C:/Users/Administrator/Desktop/encoded.txt");
+		if (!encodedFile.exists()) {
+			encodedFile.createNewFile();
 		}
-		System.out.println(System.currentTimeMillis() - time);
-		System.out.println(encode);
-
-
-		String decode = "\n";
-		time = System.currentTimeMillis();
-		for (int i = 0; i < TIMES; i++) {
-			decode = Base64.URL.decode(encode);
+		FileWriter writer = new FileWriter(encodedFile);
+		while ((c = stringReader.read()) != -1) {
+			System.out.print((char) c);
+			writer.write(c);
 		}
-		System.out.println(System.currentTimeMillis() - time);
-		System.out.println(decode);
+		writer.flush();
+
+		System.out.println("\n");
+
+		File decodedFile = new File("C:/Users/Administrator/Desktop/decoded.txt");
+		reader = new FileReader(encodedFile);
+		stringReader = KaleidoCodec.Base64.NORMAL.decode(reader);
+		writer = new FileWriter(decodedFile);
+		while ((c = stringReader.read()) != -1) {
+			System.out.print((char) c);
+			writer.write(c);
+		}
+		writer.flush();
 	}
 }
