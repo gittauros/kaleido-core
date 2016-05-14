@@ -13,7 +13,6 @@ import java.util.Arrays;
 
 /**
  * kaleido 编码/解码工具
- * 基于UTF-8编码
  * <p>
  * Created by tauros on 2016/5/14.
  */
