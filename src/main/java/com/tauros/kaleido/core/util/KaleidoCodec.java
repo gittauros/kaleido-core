@@ -142,9 +142,6 @@ public class KaleidoCodec {
 		@Override
 		public byte[] decode(byte[] source) throws KaleidoDecodeException {
 			Asserts.notNull(source, "source is null");
-//			if (source.length % 4 != 0) {
-//				throw new KaleidoDecodeException("invalid source length, source.length=" + source.length);
-//			}
 
 			byte[] target = new byte[(source.length + 3) / 4 * 3];
 			int    pos    = 0;
