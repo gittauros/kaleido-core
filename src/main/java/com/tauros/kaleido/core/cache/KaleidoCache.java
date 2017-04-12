@@ -12,7 +12,7 @@ import static com.tauros.kaleido.core.cache.SizeUnit.convertToBytes;
  */
 public final class KaleidoCache<K, E> {
 
-	private final int TO_CACHE_THRESHOLD = 2;
+	private static final int TO_CACHE_THRESHOLD = 2;
 
 	private final MemoryCalculator<E> memoryCalculator;
 	private       Vector<Node>        history;
