@@ -69,7 +69,7 @@ public class CacheServiceImpl implements CacheService, InitializingBean {
 				return obj.length;
 			}
 		});
-		this.htmlCache = new KaleidoCache<String, String>(SizeUnit.MEGABYTES, 100, new MemoryCalculator<String>() {
+		this.htmlCache = new KaleidoCache<>(SizeUnit.MEGABYTES, 100, new MemoryCalculator<String>() {
 			@Override
 			public long calculate(String obj) {
 				if (obj == null){
