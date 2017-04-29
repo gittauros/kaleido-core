@@ -35,6 +35,7 @@ public abstract class AbstractJsoupCookieDocumentSpider implements DocumentSpide
 		if (postData != null) {
 			memoryPostData.putAll(postData);
 		}
+
 		return this;
 	}
 
