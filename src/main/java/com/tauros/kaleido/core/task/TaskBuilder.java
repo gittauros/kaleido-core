@@ -7,10 +7,10 @@ import com.tauros.kaleido.core.exception.KaleidoIllegalStateException;
  */
 public interface TaskBuilder<E extends Task> {
 
-	/**
-	 * 构建一个任务
-	 *
-	 * @return
-	 */
-	E build() throws KaleidoIllegalStateException;
+    /**
+     * 构建一个任务
+     *
+     * @return
+     */
+    E build() throws KaleidoIllegalStateException;
 }

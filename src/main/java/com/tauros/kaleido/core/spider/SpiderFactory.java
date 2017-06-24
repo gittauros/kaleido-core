@@ -10,21 +10,21 @@ import com.tauros.kaleido.core.spider.impl.LofiEHentaiHttpDocumentSpider;
  */
 public final class SpiderFactory implements SpiderConstant {
 
-	private SpiderFactory() {
-		throw new KaleidoException("该类不应被实例化");
-	}
+    private SpiderFactory() {
+        throw new KaleidoException("该类不应被实例化");
+    }
 
-	public static DocumentSpider getSpider() {
-		return new LofiEHentaiHttpDocumentSpider();
-	}
+    public static DocumentSpider getSpider() {
+        return new LofiEHentaiHttpDocumentSpider();
+    }
 
-	public static DocumentSpider getSpider(String url) {
-		if (LOFI_E_HENTAI.matcher(url).find()) {
-			return new LofiEHentaiHttpDocumentSpider();
-		}
-		if (EX_HENTAI.matcher(url).find()) {
-			return new ExHentaiJsoupCookieDocumentSpider();
-		}
-		return null;
-	}
+    public static DocumentSpider getSpider(String url) {
+        if (LOFI_E_HENTAI.matcher(url).find()) {
+            return new LofiEHentaiHttpDocumentSpider();
+        }
+        if (EX_HENTAI.matcher(url).find()) {
+            return new ExHentaiJsoupCookieDocumentSpider();
+        }
+        return null;
+    }
 }

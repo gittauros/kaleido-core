@@ -11,7 +11,6 @@ import com.tauros.kaleido.core.model.bo.ExHentaiPhotoBO;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
-import com.tauros.kaleido.core.util.ConsoleLog;
 import com.tauros.kaleido.core.util.HttpUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -38,450 +37,450 @@ import java.util.regex.Matcher;
  */
 public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, DownloadConstant {
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Resource
-	private CacheService                      cacheService;
-	@Resource
-	private ExHentaiJsoupCookieDocumentSpider exHentaiJsoupCookieDocumentSpider;
-	@Resource
-	private UrlDownloaderDispatcher           urlDownloaderDispatcher;
+    @Resource
+    private CacheService                      cacheService;
+    @Resource
+    private ExHentaiJsoupCookieDocumentSpider exHentaiJsoupCookieDocumentSpider;
+    @Resource
+    private UrlDownloaderDispatcher           urlDownloaderDispatcher;
 
-	private Map<String, String> getRequestProperty() {
-		Map<String, String> requestProperty = new HashMap<>();
-		requestProperty.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
-		requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
-		requestProperty.put("Accept-Language", "zh-CN,zh;q=0.8");
-		requestProperty.put("Connection", "keep-alive");
-		requestProperty.put("Host", "exhentai.org");
-		requestProperty.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
-		requestProperty.put("Cookie", exHentaiJsoupCookieDocumentSpider.getCookieString());
+    private static String filePathFilter(String filePath) {
+        filePath = filePath.replaceAll("[^0-9a-zA-Z\\u4e00-\\u9fa5!@#$%^&*()_+-=,.\\[\\]{};'\\\\]", " ");
+        filePath = filePath.replaceAll("\\s+", " ");
+        filePath = filePath.trim();
+        return filePath;
+    }
 
-		return requestProperty;
-	}
+    private static String getFileName(String imgSrc) {
+        Matcher matcher = FILE_NAME_PATTERN.matcher(imgSrc);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return "";
+    }
 
-	@Override
-	public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
-		Map<String, Object> model = new HashMap<>();
-		String url = EXHENTAI_LIST_URL + '?';
-		if (paramBean.getPage() > 1) {
-			url += EXHENTAI_LIST_PAGE + "=" + (paramBean.getPage() - 1) + "&";
-		}
-		url += EXHENTAI_LIST_FDOUJINSHI + "=" + paramBean.getfDoujinshi() + "&";
-		url += EXHENTAI_LIST_FMANGA + "=" + paramBean.getfManga() + "&";
-		url += EXHENTAI_LIST_FARTISTCG + "=" + paramBean.getfArtistcg() + "&";
-		url += EXHENTAI_LIST_FGAMECG + "=" + paramBean.getfGamecg() + "&";
-		url += EXHENTAI_LIST_FWESTERN + "=" + paramBean.getfWestern() + "&";
-		url += EXHENTAI_LIST_FNONH + "=" + paramBean.getfNonh() + "&";
-		url += EXHENTAI_LIST_FIMAGESET + "=" + paramBean.getfImageset() + "&";
-		url += EXHENTAI_LIST_FCOSPLAY + "=" + paramBean.getfCosplay() + "&";
-		url += EXHENTAI_LIST_FASIANPORN + "=" + paramBean.getfAsianporn() + "&";
-		url += EXHENTAI_LIST_FMISC + "=" + paramBean.getfMisc() + "&";
-		url += EXHENTAI_LIST_FSEARCH + "=" + paramBean.getfSearch() + "&";
-		url += EXHENTAI_LIST_FAPPLY + "=" + paramBean.getfApply() + "&";
-		url += EXHENTAI_LIST_ADVSEARCH + "=" + paramBean.getAdvsearch() + "&";
-		url += EXHENTAI_LIST_FSNAME + "=" + paramBean.getfSname() + "&";
-		url += EXHENTAI_LIST_FSTAGS + "=" + paramBean.getfStags() + "&";
-		url += EXHENTAI_LIST_FSRDD + "=" + paramBean.getfSrdd();
+    private Map<String, String> getRequestProperty() {
+        Map<String, String> requestProperty = new HashMap<>();
+        requestProperty.put("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
+        requestProperty.put("Accept-Encoding", "gzip, deflate, sdch");
+        requestProperty.put("Accept-Language", "zh-CN,zh;q=0.8");
+        requestProperty.put("Connection", "keep-alive");
+        requestProperty.put("Host", "exhentai.org");
+        requestProperty.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
+        requestProperty.put("Cookie", exHentaiJsoupCookieDocumentSpider.getCookieString());
 
-		Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+        return requestProperty;
+    }
 
-		List<ExHentaiListBO> listBOs = new ArrayList<>();
-		Elements table = document.select(".itg");
-		if (table != null) {
-			Elements trs = table.select("tr");
-			for (Element tr : trs) {
-				Elements tds = tr.select("td");
-				if (tds.size() == 0) {
-					continue;
-				}
-				Element tagCell = tds.get(0);
-				Element timeCell = tds.get(1);
-				Element detailCell = tds.get(2);
+    @Override
+    public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
+        Map<String, Object> model = new HashMap<>();
+        String url = EXHENTAI_LIST_URL + '?';
+        if (paramBean.getPage() > 1) {
+            url += EXHENTAI_LIST_PAGE + "=" + (paramBean.getPage() - 1) + "&";
+        }
+        url += EXHENTAI_LIST_FDOUJINSHI + "=" + paramBean.getfDoujinshi() + "&";
+        url += EXHENTAI_LIST_FMANGA + "=" + paramBean.getfManga() + "&";
+        url += EXHENTAI_LIST_FARTISTCG + "=" + paramBean.getfArtistcg() + "&";
+        url += EXHENTAI_LIST_FGAMECG + "=" + paramBean.getfGamecg() + "&";
+        url += EXHENTAI_LIST_FWESTERN + "=" + paramBean.getfWestern() + "&";
+        url += EXHENTAI_LIST_FNONH + "=" + paramBean.getfNonh() + "&";
+        url += EXHENTAI_LIST_FIMAGESET + "=" + paramBean.getfImageset() + "&";
+        url += EXHENTAI_LIST_FCOSPLAY + "=" + paramBean.getfCosplay() + "&";
+        url += EXHENTAI_LIST_FASIANPORN + "=" + paramBean.getfAsianporn() + "&";
+        url += EXHENTAI_LIST_FMISC + "=" + paramBean.getfMisc() + "&";
+        url += EXHENTAI_LIST_FSEARCH + "=" + paramBean.getfSearch() + "&";
+        url += EXHENTAI_LIST_FAPPLY + "=" + paramBean.getfApply() + "&";
+        url += EXHENTAI_LIST_ADVSEARCH + "=" + paramBean.getAdvsearch() + "&";
+        url += EXHENTAI_LIST_FSNAME + "=" + paramBean.getfSname() + "&";
+        url += EXHENTAI_LIST_FSTAGS + "=" + paramBean.getfStags() + "&";
+        url += EXHENTAI_LIST_FSRDD + "=" + paramBean.getfSrdd();
 
-				String tagImg = tagCell.select("img").attr("src");
-				String time = timeCell.html();
-				String titleAndCoverImg = detailCell.select(".it2").first().html();
-				String bzUrl = detailCell.select(".it5 a").first().attr("href");
+        Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
 
-				String[] titleAndCoverImgInfo = titleAndCoverImg.split("~");
-				String coverImg;
-				String title;
-				if (titleAndCoverImgInfo.length > 3) {
-					coverImg = "http://" + titleAndCoverImgInfo[1] + "/" + titleAndCoverImgInfo[2];
-					title = titleAndCoverImgInfo[3];
-				} else {
-					Element img = detailCell.select(".it2").select("img").first();
-					coverImg = img.attr("src");
-					title = img.attr("alt");
-				}
+        List<ExHentaiListBO> listBOs = new ArrayList<>();
+        Elements table = document.select(".itg");
+        if (table != null) {
+            Elements trs = table.select("tr");
+            for (Element tr : trs) {
+                Elements tds = tr.select("td");
+                if (tds.size() == 0) {
+                    continue;
+                }
+                Element tagCell = tds.get(0);
+                Element timeCell = tds.get(1);
+                Element detailCell = tds.get(2);
 
-				ExHentaiListBO listBO = new ExHentaiListBO();
-				listBO.setTagImg(tagImg);
-				listBO.setPublishTime(time);
-				listBO.setCoverImg(coverImg);
-				listBO.setTitle(title);
-				listBO.setBzUrl(bzUrl);
-				listBO.setGalleryUrl(bzUrl);
+                String tagImg = tagCell.select("img").attr("src");
+                String time = timeCell.html();
+                String titleAndCoverImg = detailCell.select(".it2").first().html();
+                String bzUrl = detailCell.select(".it5 a").first().attr("href");
 
-				listBOs.add(listBO);
-			}
-		}
+                String[] titleAndCoverImgInfo = titleAndCoverImg.split("~");
+                String coverImg;
+                String title;
+                if (titleAndCoverImgInfo.length > 3) {
+                    coverImg = "http://" + titleAndCoverImgInfo[1] + "/" + titleAndCoverImgInfo[2];
+                    title = titleAndCoverImgInfo[3];
+                } else {
+                    Element img = detailCell.select(".it2").select("img").first();
+                    coverImg = img.attr("src");
+                    title = img.attr("alt");
+                }
 
-		//最大页数获取
-		Elements pageTable = document.select(".ptb");
-		int maxPage = 1;
-		if (pageTable != null) {
-			Elements tds = pageTable.select("td");
-			if (tds.size() > 2) {
-				Element maxPageTd = tds.get(tds.size() - 2);
-				String maxPageStr = maxPageTd.select("a").first().html();
-				maxPage = NumberUtils.toInt(maxPageStr, 1);
-			}
-		}
+                ExHentaiListBO listBO = new ExHentaiListBO();
+                listBO.setTagImg(tagImg);
+                listBO.setPublishTime(time);
+                listBO.setCoverImg(coverImg);
+                listBO.setTitle(title);
+                listBO.setBzUrl(bzUrl);
+                listBO.setGalleryUrl(bzUrl);
 
-		model.put(LIST_BO_KEY, listBOs);
-		model.put(MAX_PAGE_KEY, maxPage);
+                listBOs.add(listBO);
+            }
+        }
 
-		return model;
-	}
+        //最大页数获取
+        Elements pageTable = document.select(".ptb");
+        int maxPage = 1;
+        if (pageTable != null) {
+            Elements tds = pageTable.select("td");
+            if (tds.size() > 2) {
+                Element maxPageTd = tds.get(tds.size() - 2);
+                String maxPageStr = maxPageTd.select("a").first().html();
+                maxPage = NumberUtils.toInt(maxPageStr, 1);
+            }
+        }
 
-	@Override
-	public Map<String, Object> galleryPage(String url, boolean large, int page) {
-		Map<String, Object> model = new HashMap<>();
-		url += "?p=" + (page - 1);
-		url += "&inline_set=ts_" + (large ? "l" : "m");
+        model.put(LIST_BO_KEY, listBOs);
+        model.put(MAX_PAGE_KEY, maxPage);
 
-		String cacheKey = url;
+        return model;
+    }
 
-		Document document;
-		String html = cacheService.getStringData(CacheTypeConstant.HTML, cacheKey);
-		if (html != null) {
-			document = Jsoup.parse(html);
-		} else {
-			document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
-			cacheService.putStringData(CacheTypeConstant.HTML, cacheKey, document.toString());
-		}
+    @Override
+    public Map<String, Object> galleryPage(String url, boolean large, int page) {
+        Map<String, Object> model = new HashMap<>();
+        url += "?p=" + (page - 1);
+        url += "&inline_set=ts_" + (large ? "l" : "m");
 
-		List<ExHentaiGalleryBO> galleryBOs = new ArrayList<>();
-		Elements photos;
-		if (large) {
-			photos = document.select(".gdtl");
-		} else {
-			photos = document.select(".gdtm");
-		}
-		for (Element photo : photos) {
-			Element img = photo.select("img").first();
+        String cacheKey = url;
 
-			String title = img.attr("title");
-			String previewUrl = photo.select("a").first().attr("href");
+        Document document;
+        String html = cacheService.getStringData(CacheTypeConstant.HTML, cacheKey);
+        if (html != null) {
+            document = Jsoup.parse(html);
+        } else {
+            document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+            cacheService.putStringData(CacheTypeConstant.HTML, cacheKey, document.toString());
+        }
 
-			String largeImg = null;
-			String smallImg = null;
-			String smallImgPlaceHolder = null;
-			int smallImgXOffset = 0;
-			int smallImgYOffset = 0;
-			int smallImgWidth = 0;
-			int smallImgHeight = 0;
-			if (large) {
-				largeImg = img.attr("src");
-			} else {
-				smallImgPlaceHolder = img.attr("src");
+        List<ExHentaiGalleryBO> galleryBOs = new ArrayList<>();
+        Elements photos;
+        if (large) {
+            photos = document.select(".gdtl");
+        } else {
+            photos = document.select(".gdtm");
+        }
+        for (Element photo : photos) {
+            Element img = photo.select("img").first();
 
-				//小图背景及偏移量
-				Element div = photo.select("div").get(1);
-				String divStyle = div.attr("style");
-				String[] keyValues = divStyle.split(";");
-				for (String keyValueStr : keyValues) {
-					String key = keyValueStr.split(":")[0];
-					if (!key.contains("background")) {
-						continue;
-					}
-					String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
-					int index = value.indexOf(" ");
-					int i = 1;
-					int smallImgStart = 0;
-					int smallImgEnd = 0;
-					int xOffsetEnd = 0;
-					int yOffsetEnd = 0;
-					while (index != -1) {
-						switch (i) {
-							case 1:
-								smallImgStart = index;
-								break;
-							case 2:
-								smallImgEnd = index;
-								smallImg = value.substring(smallImgStart, smallImgEnd);
-								smallImg = smallImg.replaceAll("url", "");
-								smallImg = smallImg.replaceAll("[()]", "");
-								smallImg = smallImg.trim();
-								break;
-							case 3:
-								xOffsetEnd = index;
-								String xOffsetStr = value.substring(smallImgEnd, xOffsetEnd);
-								smallImgXOffset = NumberUtils.toInt(xOffsetStr.replaceAll("px", "").trim());
-								break;
-							case 4:
-								yOffsetEnd = index;
-								String yOffsetStr = value.substring(xOffsetEnd, yOffsetEnd);
-								smallImgYOffset = NumberUtils.toInt(yOffsetStr.replaceAll("px", "").trim());
-								break;
-							default:
-								break;
-						}
+            String title = img.attr("title");
+            String previewUrl = photo.select("a").first().attr("href");
 
-						index = value.indexOf(" ", index + 1);
-						i++;
-					}
-				}
+            String largeImg = null;
+            String smallImg = null;
+            String smallImgPlaceHolder = null;
+            int smallImgXOffset = 0;
+            int smallImgYOffset = 0;
+            int smallImgWidth = 0;
+            int smallImgHeight = 0;
+            if (large) {
+                largeImg = img.attr("src");
+            } else {
+                smallImgPlaceHolder = img.attr("src");
 
-				//小图宽高
-				String imgStyle = img.attr("style");
-				keyValues = imgStyle.split(";");
-				for (int i = 0; i < keyValues.length; i++) {
-					String keyValueStr = keyValues[i];
-					String key = keyValueStr.split(":")[0];
-					String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
-					int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
-					if (key.contains("width")) {
-						smallImgWidth = valueInt;
-					} else if (key.contains("height")) {
-						smallImgHeight = valueInt;
-					}
-				}
-			}
+                //小图背景及偏移量
+                Element div = photo.select("div").get(1);
+                String divStyle = div.attr("style");
+                String[] keyValues = divStyle.split(";");
+                for (String keyValueStr : keyValues) {
+                    String key = keyValueStr.split(":")[0];
+                    if (!key.contains("background")) {
+                        continue;
+                    }
+                    String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+                    int index = value.indexOf(" ");
+                    int i = 1;
+                    int smallImgStart = 0;
+                    int smallImgEnd = 0;
+                    int xOffsetEnd = 0;
+                    int yOffsetEnd = 0;
+                    while (index != -1) {
+                        switch (i) {
+                            case 1:
+                                smallImgStart = index;
+                                break;
+                            case 2:
+                                smallImgEnd = index;
+                                smallImg = value.substring(smallImgStart, smallImgEnd);
+                                smallImg = smallImg.replaceAll("url", "");
+                                smallImg = smallImg.replaceAll("[()]", "");
+                                smallImg = smallImg.trim();
+                                break;
+                            case 3:
+                                xOffsetEnd = index;
+                                String xOffsetStr = value.substring(smallImgEnd, xOffsetEnd);
+                                smallImgXOffset = NumberUtils.toInt(xOffsetStr.replaceAll("px", "").trim());
+                                break;
+                            case 4:
+                                yOffsetEnd = index;
+                                String yOffsetStr = value.substring(xOffsetEnd, yOffsetEnd);
+                                smallImgYOffset = NumberUtils.toInt(yOffsetStr.replaceAll("px", "").trim());
+                                break;
+                            default:
+                                break;
+                        }
 
-			ExHentaiGalleryBO galleryBO = new ExHentaiGalleryBO();
-			galleryBO.setLargeImg(largeImg);
-			galleryBO.setSmallImgXOffset(smallImgXOffset);
-			galleryBO.setSmallImgYOffset(smallImgYOffset);
-			galleryBO.setSmallImg(smallImg);
-			galleryBO.setSmallImgWidth(smallImgWidth);
-			galleryBO.setSmallImgHeight(smallImgHeight);
-			galleryBO.setSmallImgPlaceHolder(smallImgPlaceHolder);
-			galleryBO.setTitle(title);
-			galleryBO.setPreviewUrl(previewUrl);
-			galleryBO.setPhotoUrl(previewUrl);
-			galleryBOs.add(galleryBO);
-		}
+                        index = value.indexOf(" ", index + 1);
+                        i++;
+                    }
+                }
 
-		//最大页数获取
-		Elements pageTable = document.select(".ptt");
-		Elements pageTds = pageTable.select("td");
-		Element pageTd = pageTds.get(pageTds.size() - 2);
-		Element pageA = pageTd.select("a").first();
-		int maxPage = NumberUtils.toInt(pageA.html(), 1);
+                //小图宽高
+                String imgStyle = img.attr("style");
+                keyValues = imgStyle.split(";");
+                for (int i = 0; i < keyValues.length; i++) {
+                    String keyValueStr = keyValues[i];
+                    String key = keyValueStr.split(":")[0];
+                    String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+                    int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
+                    if (key.contains("width")) {
+                        smallImgWidth = valueInt;
+                    } else if (key.contains("height")) {
+                        smallImgHeight = valueInt;
+                    }
+                }
+            }
 
-		model.put(GALLERY_BO_KEY, galleryBOs);
-		model.put(MAX_PAGE_KEY, maxPage);
+            ExHentaiGalleryBO galleryBO = new ExHentaiGalleryBO();
+            galleryBO.setLargeImg(largeImg);
+            galleryBO.setSmallImgXOffset(smallImgXOffset);
+            galleryBO.setSmallImgYOffset(smallImgYOffset);
+            galleryBO.setSmallImg(smallImg);
+            galleryBO.setSmallImgWidth(smallImgWidth);
+            galleryBO.setSmallImgHeight(smallImgHeight);
+            galleryBO.setSmallImgPlaceHolder(smallImgPlaceHolder);
+            galleryBO.setTitle(title);
+            galleryBO.setPreviewUrl(previewUrl);
+            galleryBO.setPhotoUrl(previewUrl);
+            galleryBOs.add(galleryBO);
+        }
 
-		return model;
-	}
+        //最大页数获取
+        Elements pageTable = document.select(".ptt");
+        Elements pageTds = pageTable.select("td");
+        Element pageTd = pageTds.get(pageTds.size() - 2);
+        Element pageA = pageTd.select("a").first();
+        int maxPage = NumberUtils.toInt(pageA.html(), 1);
 
-	@Override
-	public Map<String, Object> photoPage(String url) {
-		Map<String, Object> model = new HashMap<>();
+        model.put(GALLERY_BO_KEY, galleryBOs);
+        model.put(MAX_PAGE_KEY, maxPage);
 
-		Document document;
-		String html = cacheService.getStringData(CacheTypeConstant.HTML, url);
-		if (html != null) {
-			document = Jsoup.parse(html);
-		} else {
-			document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
-			cacheService.putStringData(CacheTypeConstant.HTML, url, document.toString());
-		}
+        return model;
+    }
 
-		Element img = document.select("#img").first();
-		String photoImg = img.attr("src");
+    @Override
+    public Map<String, Object> photoPage(String url) {
+        Map<String, Object> model = new HashMap<>();
 
-		int imgWidth = 0;
-		int imgHeight = 0;
-		String imgStyle = img.attr("style");
-		String[] keyValues = imgStyle.split(";");
-		for (int i = 0; i < keyValues.length; i++) {
-			String keyValueStr = keyValues[i];
-			String[] keyValue = keyValueStr.split(":");
-			String key = keyValue[0];
-			String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
-			int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
-			if (key.contains("width")) {
-				imgWidth = valueInt;
-			} else if (key.contains("height")) {
-				imgHeight = valueInt;
-			}
-		}
+        Document document;
+        String html = cacheService.getStringData(CacheTypeConstant.HTML, url);
+        if (html != null) {
+            document = Jsoup.parse(html);
+        } else {
+            document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+            cacheService.putStringData(CacheTypeConstant.HTML, url, document.toString());
+        }
 
-		Element pageDiv = document.select(".sn").first();
-		Element curPageSpan = pageDiv.select("span").first();
-		Element lastPageSpan = pageDiv.select("span").last();
-		Elements pages = pageDiv.select("a");
+        Element img = document.select("#img").first();
+        String photoImg = img.attr("src");
 
-		String firstPageUrl = pages.get(0).attr("href");
-		String prevPageUrl = pages.get(1).attr("href");
-		String nextPageUrl = pages.get(2).attr("href");
-		String lastPageUrl = pages.get(3).attr("href");
-		int curPage = NumberUtils.toInt(curPageSpan.html(), 1);
-		int lastPage = NumberUtils.toInt(lastPageSpan.html(), 1);
+        int imgWidth = 0;
+        int imgHeight = 0;
+        String imgStyle = img.attr("style");
+        String[] keyValues = imgStyle.split(";");
+        for (int i = 0; i < keyValues.length; i++) {
+            String keyValueStr = keyValues[i];
+            String[] keyValue = keyValueStr.split(":");
+            String key = keyValue[0];
+            String value = keyValueStr.substring(keyValueStr.indexOf(":") + 1);
+            int valueInt = NumberUtils.toInt(value.replaceAll("px", "").trim());
+            if (key.contains("width")) {
+                imgWidth = valueInt;
+            } else if (key.contains("height")) {
+                imgHeight = valueInt;
+            }
+        }
 
-		ExHentaiPhotoBO photoBO = new ExHentaiPhotoBO();
-		photoBO.setPhotoImg(photoImg);
-		photoBO.setCurPage(curPage);
-		photoBO.setLastPage(lastPage);
-		photoBO.setFirstPageUrl(firstPageUrl);
-		photoBO.setPrevPageUrl(prevPageUrl);
-		photoBO.setNextPageUrl(nextPageUrl);
-		photoBO.setLastPageUrl(lastPageUrl);
-		photoBO.setImgWidth(imgWidth);
-		photoBO.setImgHeight(imgHeight);
+        Element pageDiv = document.select(".sn").first();
+        Element curPageSpan = pageDiv.select("span").first();
+        Element lastPageSpan = pageDiv.select("span").last();
+        Elements pages = pageDiv.select("a");
 
-		model.put(PHOTO_BO_KEY, photoBO);
+        String firstPageUrl = pages.get(0).attr("href");
+        String prevPageUrl = pages.get(1).attr("href");
+        String nextPageUrl = pages.get(2).attr("href");
+        String lastPageUrl = pages.get(3).attr("href");
+        int curPage = NumberUtils.toInt(curPageSpan.html(), 1);
+        int lastPage = NumberUtils.toInt(lastPageSpan.html(), 1);
 
-		return model;
-	}
+        ExHentaiPhotoBO photoBO = new ExHentaiPhotoBO();
+        photoBO.setPhotoImg(photoImg);
+        photoBO.setCurPage(curPage);
+        photoBO.setLastPage(lastPage);
+        photoBO.setFirstPageUrl(firstPageUrl);
+        photoBO.setPrevPageUrl(prevPageUrl);
+        photoBO.setNextPageUrl(nextPageUrl);
+        photoBO.setLastPageUrl(lastPageUrl);
+        photoBO.setImgWidth(imgWidth);
+        photoBO.setImgHeight(imgHeight);
 
-	@Override
-	public String download(String saveBasePath, String url, long sleep, boolean origin) {
-		return ex_hentai_download(saveBasePath, url, sleep, origin);
-	}
+        model.put(PHOTO_BO_KEY, photoBO);
 
-	@Override
-	public byte[] image(String url) {
-		byte[] data = cacheService.getByteArrayData(CacheTypeConstant.IMAGE, url);
-		if (data != null && data.length > 0) {
-			return data;
-		}
-		InputStream inputStream = null;
-		ByteArrayOutputStream byteArrayOutputStream = null;
-		try {
-			URLConnection connection = HttpUtil.openConnection(url);
-			HttpUtil.setRequestProperty(connection, getRequestProperty());
+        return model;
+    }
 
-			inputStream = connection.getInputStream();
-			byteArrayOutputStream = new ByteArrayOutputStream();
+    @Override
+    public String download(String saveBasePath, String url, long sleep, boolean origin) {
+        return ex_hentai_download(saveBasePath, url, sleep, origin);
+    }
 
-			boolean chunked;
-			long contentLength = 0;
-			long processLength = 0;
-			if("chunked".equals(connection.getHeaderField("Transfer-Encoding"))) {
-				chunked = true;
-			} else {
-				chunked = false;
-				contentLength = connection.getContentLengthLong();
-			}
+    @Override
+    public byte[] image(String url) {
+        byte[] data = cacheService.getByteArrayData(CacheTypeConstant.IMAGE, url);
+        if (data != null && data.length > 0) {
+            return data;
+        }
+        InputStream inputStream = null;
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        try {
+            URLConnection connection = HttpUtil.openConnection(url);
+            HttpUtil.setRequestProperty(connection, getRequestProperty());
 
-			int count;
-			byte[] buffer = new byte[BUFFER_SIZE];
-			while ((count = inputStream.read(buffer)) != -1) {
-				byteArrayOutputStream.write(buffer, 0, count);
-				processLength += count;
-			}
+            inputStream = connection.getInputStream();
+            byteArrayOutputStream = new ByteArrayOutputStream();
 
-			data = byteArrayOutputStream.toByteArray();
-			if (!chunked && processLength == contentLength) {
-				cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
-			}
-			return data;
-		} catch (IOException ioe) {
-			logger.warn("visit image fail url=" + url, ioe);
-			return new byte[0];
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-			IOUtils.closeQuietly(byteArrayOutputStream);
-		}
-	}
+            boolean chunked;
+            long contentLength = 0;
+            long processLength = 0;
+            if ("chunked".equals(connection.getHeaderField("Transfer-Encoding"))) {
+                chunked = true;
+            } else {
+                chunked = false;
+                contentLength = connection.getContentLengthLong();
+            }
 
-	private String ex_hentai_download(String saveBasePath, String url, long sleep, boolean origin) {
-		try {
-			Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
-			Element firstImgDiv = document.select(".gdtm").first();
-			if (firstImgDiv == null) {
-				firstImgDiv = document.select(".gdtl").first();
-			}
-			Element firstA = firstImgDiv.select("a").first();
-			String href = firstA.attr("href");
+            int count;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            while ((count = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, count);
+                processLength += count;
+            }
 
-			Element title = document.select("#gn").first();
-			String dirName = title.html();
-			dirName = dirName.replaceAll("[\\\\/:\"*?<>|]", " ");
-			String filePath = saveBasePath + dirName;
+            data = byteArrayOutputStream.toByteArray();
+            if (!chunked && processLength == contentLength) {
+                cacheService.putByteArrayData(CacheTypeConstant.IMAGE, url, data);
+            }
+            return data;
+        } catch (IOException ioe) {
+            logger.warn("visit image fail url=" + url, ioe);
+            return new byte[0];
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(byteArrayOutputStream);
+        }
+    }
 
-			filePath = filePathFilter(filePath);
+    private String ex_hentai_download(String saveBasePath, String url, long sleep, boolean origin) {
+        try {
+            Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+            Element firstImgDiv = document.select(".gdtm").first();
+            if (firstImgDiv == null) {
+                firstImgDiv = document.select(".gdtl").first();
+            }
+            Element firstA = firstImgDiv.select("a").first();
+            String href = firstA.attr("href");
 
-			int page = 1;
-			while (true) {
-				String nextPage = start_ex_hentai_download(filePath, href, origin, page);
-				if (END_OF_GRAB_PAGE.equals(nextPage)) {
-					break;
-				} else {
-					href = nextPage;
-					page++;
-				}
-				if (sleep > 0) {
-					Thread.sleep(sleep);
-				}
-			}
+            Element title = document.select("#gn").first();
+            String dirName = title.html();
+            dirName = dirName.replaceAll("[\\\\/:\"*?<>|]", " ");
+            String filePath = saveBasePath + dirName;
 
-			return "下载成功！";
-		} catch (Exception e) {
-			logger.warn("ex_hentai_download exception", e);
-			return "下载错误！";
-		}
-	}
+            filePath = filePathFilter(filePath);
 
-	private String start_ex_hentai_download(String filePath, String url, boolean origin, int page) {
-		try {
-			Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
+            int page = 1;
+            while (true) {
+                String nextPage = start_ex_hentai_download(filePath, href, origin, page);
+                if (END_OF_GRAB_PAGE.equals(nextPage)) {
+                    break;
+                } else {
+                    href = nextPage;
+                    page++;
+                }
+                if (sleep > 0) {
+                    Thread.sleep(sleep);
+                }
+            }
 
-			Element img = document.select("#img").first();
-			String src = img.attr("src");
+            return "下载成功！";
+        } catch (Exception e) {
+            logger.warn("ex_hentai_download exception", e);
+            return "下载错误！";
+        }
+    }
 
-			String fileName = "page_" + page + "_" + getFileName(src);
+    private String start_ex_hentai_download(String filePath, String url, boolean origin, int page) {
+        try {
+            Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
 
-			String downloadSrc = src;
-			if (origin) {
-				Element originImgDiv = document.select("#i7").first();
-				Elements originImgA = originImgDiv.select("a");
-				if (originImgA != null && originImgA.size() > 0) {
-					downloadSrc = originImgA.first().attr("href");
-					logger.info("下载原图 - " + downloadSrc);
-				}
-			}
+            Element img = document.select("#img").first();
+            String src = img.attr("src");
 
-			//开始下载
-			urlDownloaderDispatcher.dispatch(filePath, fileName, downloadSrc, getRequestProperty());
+            String fileName = "page_" + page + "_" + getFileName(src);
 
-			Elements next = document.select("#next");
-			if (next != null) {
-				String href = next.first().attr("href");
-				Elements spans = document.select(".sn div span");
-				if (spans != null && spans.size() > 1) {
-					int curPage = NumberUtils.toInt(spans.get(0).html(), 0);
-					int maxPage = NumberUtils.toInt(spans.get(1).html(), 0);
-					if (curPage < maxPage) {
-						return href;
-					}
-				}
-			}
+            String downloadSrc = src;
+            if (origin) {
+                Element originImgDiv = document.select("#i7").first();
+                Elements originImgA = originImgDiv.select("a");
+                if (originImgA != null && originImgA.size() > 0) {
+                    downloadSrc = originImgA.first().attr("href");
+                    logger.info("下载原图 - " + downloadSrc);
+                }
+            }
 
-			return END_OF_GRAB_PAGE;
-		} catch (Exception e) {
-			logger.warn("start_ex_hentai_download exception", e);
-			return END_OF_GRAB_PAGE;
-		}
-	}
+            //开始下载
+            urlDownloaderDispatcher.dispatch(filePath, fileName, downloadSrc, getRequestProperty());
 
-	private static String filePathFilter(String filePath) {
-		filePath = filePath.replaceAll("[^0-9a-zA-Z\\u4e00-\\u9fa5!@#$%^&*()_+-=,.\\[\\]{};'\\\\]", " ");
-		filePath = filePath.replaceAll("\\s+", " ");
-		filePath = filePath.trim();
-		return filePath;
-	}
+            Elements next = document.select("#next");
+            if (next != null) {
+                String href = next.first().attr("href");
+                Elements spans = document.select(".sn div span");
+                if (spans != null && spans.size() > 1) {
+                    int curPage = NumberUtils.toInt(spans.get(0).html(), 0);
+                    int maxPage = NumberUtils.toInt(spans.get(1).html(), 0);
+                    if (curPage < maxPage) {
+                        return href;
+                    }
+                }
+            }
 
-	private static String getFileName(String imgSrc) {
-		Matcher matcher = FILE_NAME_PATTERN.matcher(imgSrc);
-		if (matcher.find()) {
-			return matcher.group();
-		}
-		return "";
-	}
+            return END_OF_GRAB_PAGE;
+        } catch (Exception e) {
+            logger.warn("start_ex_hentai_download exception", e);
+            return END_OF_GRAB_PAGE;
+        }
+    }
 }

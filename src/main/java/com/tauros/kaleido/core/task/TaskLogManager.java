@@ -11,68 +11,68 @@ import java.util.concurrent.Executors;
  */
 public enum TaskLogManager {
 
-	INSTANCE;
+    INSTANCE;
 
-	private static long LOG_SLEEP = 1000;
-	private ConcurrentHashMap<Long, TaskStatusListener> listenerPool;
-	private Executor                                    executor;
+    private static long LOG_SLEEP = 1000;
+    private ConcurrentHashMap<Long, TaskStatusListener> listenerPool;
+    private Executor                                    executor;
 
-	TaskLogManager() {
-		init();
-	}
+    TaskLogManager() {
+        init();
+    }
 
-	private void init() {
-		listenerPool = new ConcurrentHashMap<>();
-		executor = Executors.newSingleThreadExecutor();
-	}
+    public static void registerListener(TaskStatusListener taskStatusListener) {
+        INSTANCE.putListener(taskStatusListener);
+    }
 
-	private synchronized void putListener(TaskStatusListener taskStatusListener) {
-		listenerPool.put(taskStatusListener.getTaskId(), taskStatusListener);
-		if (listenerPool.size() == 1) {
-			executor.execute(new RunnableLog());
-		}
-	}
+    public static void unRegisterListener(TaskStatusListener taskStatusListener) {
+        INSTANCE.removeListener(taskStatusListener);
+    }
 
-	private synchronized void removeListener(TaskStatusListener taskStatusListener) {
-		listenerPool.remove(taskStatusListener.getTaskId());
-	}
+    private void init() {
+        listenerPool = new ConcurrentHashMap<>();
+        executor = Executors.newSingleThreadExecutor();
+    }
 
-	private class RunnableLog implements Runnable {
-		@Override
-		public void run() {
-			ConsoleLog.e("监听日志开始");
-			while (!listenerPool.isEmpty()) {
-				StringBuilder logBuilder = new StringBuilder("");
-				int index = 0;
-				for (TaskStatusListener taskStatusListener : listenerPool.values()) {
-					index++;
-					TaskInfo taskInfo = taskStatusListener.fetchInfo();
-					if (taskInfo != null) {
-						logBuilder.append(taskInfo.fullInfo());
-						if (index < listenerPool.size()) {
-							logBuilder.append("\n");
-						}
-					}
-				}
-				if (logBuilder.length() > 0) {
-					ConsoleLog.e(logBuilder.toString());
-				}
-				try {
-					Thread.sleep(LOG_SLEEP);
-				} catch (InterruptedException ie) {
-					executor.execute(new RunnableLog());
-					break;
-				}
-			}
-			ConsoleLog.e("监听日志结束");
-		}
-	}
+    private synchronized void putListener(TaskStatusListener taskStatusListener) {
+        listenerPool.put(taskStatusListener.getTaskId(), taskStatusListener);
+        if (listenerPool.size() == 1) {
+            executor.execute(new RunnableLog());
+        }
+    }
 
-	public static void registerListener(TaskStatusListener taskStatusListener) {
-		INSTANCE.putListener(taskStatusListener);
-	}
+    private synchronized void removeListener(TaskStatusListener taskStatusListener) {
+        listenerPool.remove(taskStatusListener.getTaskId());
+    }
 
-	public static void unRegisterListener(TaskStatusListener taskStatusListener) {
-		INSTANCE.removeListener(taskStatusListener);
-	}
+    private class RunnableLog implements Runnable {
+        @Override
+        public void run() {
+            ConsoleLog.e("监听日志开始");
+            while (!listenerPool.isEmpty()) {
+                StringBuilder logBuilder = new StringBuilder("");
+                int index = 0;
+                for (TaskStatusListener taskStatusListener : listenerPool.values()) {
+                    index++;
+                    TaskInfo taskInfo = taskStatusListener.fetchInfo();
+                    if (taskInfo != null) {
+                        logBuilder.append(taskInfo.fullInfo());
+                        if (index < listenerPool.size()) {
+                            logBuilder.append("\n");
+                        }
+                    }
+                }
+                if (logBuilder.length() > 0) {
+                    ConsoleLog.e(logBuilder.toString());
+                }
+                try {
+                    Thread.sleep(LOG_SLEEP);
+                } catch (InterruptedException ie) {
+                    executor.execute(new RunnableLog());
+                    break;
+                }
+            }
+            ConsoleLog.e("监听日志结束");
+        }
+    }
 }

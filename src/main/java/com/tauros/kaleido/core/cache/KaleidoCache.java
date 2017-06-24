@@ -13,17 +13,15 @@ import static com.tauros.kaleido.core.cache.SizeUnit.convertToBytes;
  */
 public final class KaleidoCache<K, E> {
 
-    private static Logger logger = LoggerFactory.getLogger(KaleidoCache.class);
-
     private static final int TO_CACHE_THRESHOLD = 2;
-
+    private static Logger logger = LoggerFactory.getLogger(KaleidoCache.class);
     private final MemoryCalculator<E> memoryCalculator;
+    private final long                maxMemory;
     private       Vector<Node>        history;
     private       long                historyMemory;
     private       Vector<Node>        cache;
     private       long                cacheMemory;
-    private final long                maxMemory;
-
+    private ReentrantLock trimLock = new ReentrantLock();
 
     public KaleidoCache(long maxMemory, MemoryCalculator<E> memoryCalculator) {
         this.maxMemory = maxMemory;
@@ -34,44 +32,6 @@ public final class KaleidoCache<K, E> {
 
     public KaleidoCache(SizeUnit unit, long maxMemory, MemoryCalculator<E> memoryCalculator) {
         this(convertToBytes(unit, maxMemory), memoryCalculator);
-    }
-
-    private class Node {
-        int hits;
-        K   key;
-        E   data;
-
-        public Node(K key, E data) {
-            this.key = key;
-            this.data = data;
-            this.hits = 0;
-            hit();
-        }
-
-        public long memorySize() {
-            return memoryCalculator.calculate(this.data);
-        }
-
-        public Node hit() {
-            hits++;
-            return this;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Node node = (Node) o;
-
-            return key.equals(node.key);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return key.hashCode();
-        }
     }
 
     public synchronized int size() {
@@ -121,8 +81,6 @@ public final class KaleidoCache<K, E> {
         int index = history.indexOf(keyNode);
         return history.get(index);
     }
-
-    private ReentrantLock trimLock = new ReentrantLock();
 
     private void trimHistory() {
         trimLock.lock();
@@ -226,5 +184,43 @@ public final class KaleidoCache<K, E> {
             data = findHistoryNode(keyNode).data;
         }
         return data;
+    }
+
+    private class Node {
+        int hits;
+        K   key;
+        E   data;
+
+        public Node(K key, E data) {
+            this.key = key;
+            this.data = data;
+            this.hits = 0;
+            hit();
+        }
+
+        public long memorySize() {
+            return memoryCalculator.calculate(this.data);
+        }
+
+        public Node hit() {
+            hits++;
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Node node = (Node) o;
+
+            return key.equals(node.key);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return key.hashCode();
+        }
     }
 }

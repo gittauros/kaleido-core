@@ -5,14 +5,14 @@ package com.tauros.kaleido.core.exception;
  */
 public class KaleidoUnsupportedException extends KaleidoException {
 
-	public KaleidoUnsupportedException() {
-	}
+    public KaleidoUnsupportedException() {
+    }
 
-	public KaleidoUnsupportedException(String message) {
-		super(message);
-	}
+    public KaleidoUnsupportedException(String message) {
+        super(message);
+    }
 
-	public KaleidoUnsupportedException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public KaleidoUnsupportedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

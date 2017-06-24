@@ -7,8 +7,8 @@ import org.jsoup.nodes.Document;
  */
 public interface DocumentSpider {
 
-	int TIME_LIMIT  = 10000;
-	int RETRY_TIMES = 3;
+    int TIME_LIMIT  = 10000;
+    int RETRY_TIMES = 3;
 
-	Document captureDocument(String url, String cookie, String host, String referer);
+    Document captureDocument(String url, String cookie, String host, String referer);
 }

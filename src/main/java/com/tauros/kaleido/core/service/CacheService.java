@@ -7,11 +7,11 @@ import com.tauros.kaleido.core.constant.CacheTypeConstant;
  */
 public interface CacheService {
 
-	byte[] getByteArrayData(CacheTypeConstant type, String key);
+    byte[] getByteArrayData(CacheTypeConstant type, String key);
 
-	void putByteArrayData(CacheTypeConstant type, String key, byte[] data);
+    void putByteArrayData(CacheTypeConstant type, String key, byte[] data);
 
-	String getStringData(CacheTypeConstant type, String key);
+    String getStringData(CacheTypeConstant type, String key);
 
-	void putStringData(CacheTypeConstant type, String key, String data);
+    void putStringData(CacheTypeConstant type, String key, String data);
 }

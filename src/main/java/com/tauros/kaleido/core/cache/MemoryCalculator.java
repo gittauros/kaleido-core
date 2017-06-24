@@ -6,5 +6,5 @@ package com.tauros.kaleido.core.cache;
 @FunctionalInterface
 public interface MemoryCalculator<E> {
 
-	long calculate(E obj);
+    long calculate(E obj);
 }

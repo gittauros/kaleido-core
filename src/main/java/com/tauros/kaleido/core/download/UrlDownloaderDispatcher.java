@@ -13,38 +13,38 @@ import java.util.Map;
  */
 public final class UrlDownloaderDispatcher implements TaskDispatcher<UrlDownloader> {
 
-	/**
-	 * 分发下载任务
-	 *
-	 * @param filePath
-	 * @param fileName
-	 * @param url
-	 */
-	public void dispatch(String filePath, String fileName, String url) {
-		UrlDownloader urlDownloader = new UrlDownloaderBuilder()
-				.setFilePath(filePath)
-				.setFileName(fileName)
-				.setUrl(url)
-				.setTaskStatusListener(new SimpleTaskStatusListener())
-				.build();
-		TaskManager.putTask(urlDownloader);
-	}
+    /**
+     * 分发下载任务
+     *
+     * @param filePath
+     * @param fileName
+     * @param url
+     */
+    public void dispatch(String filePath, String fileName, String url) {
+        UrlDownloader urlDownloader = new UrlDownloaderBuilder()
+                .setFilePath(filePath)
+                .setFileName(fileName)
+                .setUrl(url)
+                .setTaskStatusListener(new SimpleTaskStatusListener())
+                .build();
+        TaskManager.putTask(urlDownloader);
+    }
 
-	/**
-	 * 分发下载任务
-	 *
-	 * @param filePath
-	 * @param fileName
-	 * @param url
-	 */
-	public void dispatch(String filePath, String fileName, String url, Map<String, String> requestProperty) {
-		UrlDownloader urlDownloader = new UrlDownloaderBuilder()
-				.setFilePath(filePath)
-				.setFileName(fileName)
-				.setUrl(url)
-				.setTaskStatusListener(new SimpleTaskStatusListener())
-				.setRequestProperty(requestProperty)
-				.build();
-		TaskManager.putTask(urlDownloader);
-	}
+    /**
+     * 分发下载任务
+     *
+     * @param filePath
+     * @param fileName
+     * @param url
+     */
+    public void dispatch(String filePath, String fileName, String url, Map<String, String> requestProperty) {
+        UrlDownloader urlDownloader = new UrlDownloaderBuilder()
+                .setFilePath(filePath)
+                .setFileName(fileName)
+                .setUrl(url)
+                .setTaskStatusListener(new SimpleTaskStatusListener())
+                .setRequestProperty(requestProperty)
+                .build();
+        TaskManager.putTask(urlDownloader);
+    }
 }

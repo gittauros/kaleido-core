@@ -10,39 +10,39 @@ import java.util.Map;
  */
 public final class HttpUtil {
 
-	private static final int CONNECTION_TIMEOUT = 6000;
-	private static final int READ_TIMEOUT = 50000;
+    private static final int CONNECTION_TIMEOUT = 6000;
+    private static final int READ_TIMEOUT       = 50000;
 
-	public static URLConnection openConnection(String urlStr) throws IOException {
-		URL url = new URL(urlStr);
-		//设置代理
+    public static URLConnection openConnection(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+        //设置代理
 //		Proxy proxy = null;
 //		if (ProxySettings.isReady()) {
 //			InetSocketAddress inetSocketAddress = new InetSocketAddress(InetAddress.getByName(ProxySettings.getProxyIp()), ProxySettings.getPort());
 //			proxy = new Proxy(Proxy.Type.HTTP, inetSocketAddress);
 //		}
 
-		URLConnection connection;
+        URLConnection connection;
 //		if (proxy == null) {
-		connection = url.openConnection();
+        connection = url.openConnection();
 //		} else {
 //			connection = url.openConnection(proxy);
 //		}
-		//设置超时时间
-		connection.setConnectTimeout(CONNECTION_TIMEOUT);
-		//设置读取超时时间
-		connection.setReadTimeout(READ_TIMEOUT);
-		return connection;
-	}
+        //设置超时时间
+        connection.setConnectTimeout(CONNECTION_TIMEOUT);
+        //设置读取超时时间
+        connection.setReadTimeout(READ_TIMEOUT);
+        return connection;
+    }
 
-	public static void setRequestProperty(URLConnection connection, Map<String, String> requestProperty) {
-		if (connection == null || requestProperty == null) {
-			return;
-		}
-		if (!requestProperty.isEmpty()) {
-			for (Map.Entry<String, String> entry : requestProperty.entrySet()) {
-				connection.setRequestProperty(entry.getKey(), entry.getValue());
-			}
-		}
-	}
+    public static void setRequestProperty(URLConnection connection, Map<String, String> requestProperty) {
+        if (connection == null || requestProperty == null) {
+            return;
+        }
+        if (!requestProperty.isEmpty()) {
+            for (Map.Entry<String, String> entry : requestProperty.entrySet()) {
+                connection.setRequestProperty(entry.getKey(), entry.getValue());
+            }
+        }
+    }
 }

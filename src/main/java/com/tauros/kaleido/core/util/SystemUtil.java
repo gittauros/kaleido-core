@@ -13,6 +13,9 @@ import java.io.*;
 public final class SystemUtil {
 
     private static Logger logger = LoggerFactory.getLogger(SystemUtil.class);
+    private static File savePathFile;
+    private static boolean savePathCacheInitialized = false;
+    private static String  cachedSavePath           = "";
 
     /**
      * 获取用户文件夹路径
@@ -42,11 +45,6 @@ public final class SystemUtil {
     public static String getDefaultSavePath() {
         return getUserHomePath() + "/myBenz";
     }
-
-    private static File savePathFile;
-
-    private static boolean savePathCacheInitialized = false;
-    private static String  cachedSavePath           = "";
 
     private synchronized static void initSavePath() {
         if (savePathFile != null) {

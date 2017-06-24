@@ -18,11 +18,6 @@ import java.util.Map;
  */
 public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocumentSpider implements SpiderConstant {
 
-    private enum CookieMode {
-        HARDCODE, AUTO_LOGIN
-    }
-
-    private CookieMode cookieMode = CookieMode.HARDCODE;
     //    private String hardcodeCookie = "__utma=185428086.917164177.1448776649.1448776649.1448776649.1; __utmz=185428086.1448776649.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); event=1448776679; ipb_member_id=1599448; ipb_pass_hash=455815f3429e5b1382d41e9b7d3b50d4; igneous=4861c41adf496a2c27443eb9376c131c29add7523c20d436a5404eb5e3986f2843162c1b3dc1ec0fdc954e1cee57cde90e4d113d4b272eb38df2b4fccdff7ddd; s=b79a5cc244d60f4bb035dfffe9aae4217c34f547c8625f35d34369c96243bec30c00a0e88b64dc3d9c9eba3eb48f2fbc8fe47b0fe24bb05dbbf01d3f3ddd3587; uconfig=tl_m-uh_y-rc_0-cats_0-xns_0-ts_m-tr_2-prn_y-dm_l-ar_0-rx_0-ry_0-ms_n-mt_n-cs_a-to_a-pn_0-sc_0-sa_y-oi_n-qb_n-tf_n-hp_-hk_-xl_; lv=1451198567-1451200954";
     private static String hardcodeCookie;
     private static File   cookieFile;
@@ -51,6 +46,8 @@ public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocume
             staticLogger.error("initialize exhentai-cookie exception", e);
         }
     }
+
+    private CookieMode cookieMode = CookieMode.HARDCODE;
 
     public ExHentaiJsoupCookieDocumentSpider setHardcodeCookie(String cookie) {
         if (cookie != null) {
@@ -164,5 +161,9 @@ public class ExHentaiJsoupCookieDocumentSpider extends AbstractJsoupCookieDocume
 
     public Document hardcodeCookieCaptureDocument(String url, String host, String referer) {
         return captureDocument(url, hardcodeCookie, host, referer);
+    }
+
+    private enum CookieMode {
+        HARDCODE, AUTO_LOGIN
     }
 }

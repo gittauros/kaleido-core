@@ -10,35 +10,35 @@ import com.tauros.kaleido.core.task.TaskStatusListener;
  */
 public class SimpleTaskStatusListener implements TaskStatusListener {
 
-	private long     taskId;
-	private TaskInfo taskInfo;
+    private long     taskId;
+    private TaskInfo taskInfo;
 
-	@Override
-	public void onRegister(long taskId) {
-		this.taskId = taskId;
-		TaskLogManager.registerListener(this);
-	}
+    @Override
+    public void onRegister(long taskId) {
+        this.taskId = taskId;
+        TaskLogManager.registerListener(this);
+    }
 
-	@Override
-	public void update(TaskInfo taskInfo) {
-		if (taskInfo == null) {
-			throw new KaleidoIllegalStateException("taskInfo is null");
-		}
-		this.taskInfo = taskInfo;
-	}
+    @Override
+    public void update(TaskInfo taskInfo) {
+        if (taskInfo == null) {
+            throw new KaleidoIllegalStateException("taskInfo is null");
+        }
+        this.taskInfo = taskInfo;
+    }
 
-	@Override
-	public TaskInfo fetchInfo() {
-		return this.taskInfo;
-	}
+    @Override
+    public TaskInfo fetchInfo() {
+        return this.taskInfo;
+    }
 
-	@Override
-	public void onUnRegister() {
-		TaskLogManager.unRegisterListener(this);
-	}
+    @Override
+    public void onUnRegister() {
+        TaskLogManager.unRegisterListener(this);
+    }
 
-	@Override
-	public long getTaskId() {
-		return this.taskId;
-	}
+    @Override
+    public long getTaskId() {
+        return this.taskId;
+    }
 }

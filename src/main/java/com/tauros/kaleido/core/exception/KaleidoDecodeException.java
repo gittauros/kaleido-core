@@ -5,15 +5,15 @@ package com.tauros.kaleido.core.exception;
  */
 public class KaleidoDecodeException extends Exception {
 
-	public KaleidoDecodeException(String message) {
-		super(message);
-	}
+    public KaleidoDecodeException(String message) {
+        super(message);
+    }
 
-	public KaleidoDecodeException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public KaleidoDecodeException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public KaleidoDecodeException(Throwable cause) {
-		super(cause);
-	}
+    public KaleidoDecodeException(Throwable cause) {
+        super(cause);
+    }
 }

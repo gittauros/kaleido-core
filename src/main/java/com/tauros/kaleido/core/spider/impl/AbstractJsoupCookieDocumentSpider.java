@@ -17,12 +17,11 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractJsoupCookieDocumentSpider implements DocumentSpider, SpiderConstant {
 
+    protected final Pattern                           cookiePattern    = Pattern.compile("^\\s*([^\\s;]*;\\s*)*([^\\s;]*;?)\\s*$");
     protected Logger logger = LoggerFactory.getLogger(getClass());
-
     protected       ConcurrentHashMap<String, String> memoryCookieMap  = new ConcurrentHashMap<>();
     protected       ConcurrentHashMap<String, String> memoryPostData   = new ConcurrentHashMap<>();
     protected       Connection.Method                 connectionMethod = Connection.Method.GET;
-    protected final Pattern                           cookiePattern    = Pattern.compile("^\\s*([^\\s;]*;\\s*)*([^\\s;]*;?)\\s*$");
 
     protected abstract boolean setCookie(Map<String, String> cookieMap);
 
