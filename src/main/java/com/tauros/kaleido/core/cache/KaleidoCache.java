@@ -1,6 +1,8 @@
 package com.tauros.kaleido.core.cache;
 
 import com.tauros.kaleido.core.util.ConsoleLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Vector;
 import java.util.concurrent.locks.ReentrantLock;
@@ -11,6 +13,8 @@ import static com.tauros.kaleido.core.cache.SizeUnit.convertToBytes;
  * Created by tauros on 2016/4/17.
  */
 public final class KaleidoCache<K, E> {
+
+	private static Logger logger = LoggerFactory.getLogger(KaleidoCache.class);
 
 	private static final int TO_CACHE_THRESHOLD = 2;
 
@@ -127,7 +131,7 @@ public final class KaleidoCache<K, E> {
 			Node node = history.lastElement();
 			history.remove(history.size() - 1);
 			historyMemory -= node.memorySize();
-			ConsoleLog.e("缓存历史抛弃：key=" + node.key);
+			logger.info("缓存历史抛弃：key=" + node.key);
 		}
 		trimLock.unlock();
 	}
@@ -138,7 +142,7 @@ public final class KaleidoCache<K, E> {
 			Node node = cache.lastElement();
 			cache.remove(cache.size() - 1);
 			cacheMemory -= node.memorySize();
-			ConsoleLog.e("缓存抛弃：key=" + node.key);
+			logger.info("缓存抛弃：key=" + node.key);
 		}
 		trimLock.unlock();
 	}

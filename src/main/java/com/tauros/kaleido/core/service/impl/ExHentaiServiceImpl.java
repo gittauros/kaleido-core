@@ -20,6 +20,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -35,6 +37,8 @@ import java.util.regex.Matcher;
  * Created by tauros on 2016/4/9.
  */
 public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, DownloadConstant {
+
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Resource
 	private CacheService                      cacheService;
@@ -378,7 +382,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			}
 			return data;
 		} catch (IOException ioe) {
-			ConsoleLog.e("访问图片失败 url=" + url, ioe);
+			logger.warn("访问图片失败 url=" + url, ioe);
 			return new byte[0];
 		} finally {
 			IOUtils.closeQuietly(inputStream);
@@ -419,7 +423,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return "下载成功！";
 		} catch (Exception e) {
-			ConsoleLog.e(e);
+			logger.warn("ex_hentai_download exception", e);
 			return "下载错误！";
 		}
 	}
@@ -439,7 +443,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 				Elements originImgA = originImgDiv.select("a");
 				if (originImgA != null && originImgA.size() > 0) {
 					downloadSrc = originImgA.first().attr("href");
-					ConsoleLog.e("下载原图 - " + downloadSrc);
+					logger.info("下载原图 - " + downloadSrc);
 				}
 			}
 
@@ -461,7 +465,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
 			return END_OF_GRAB_PAGE;
 		} catch (Exception e) {
-			ConsoleLog.e(e);
+			logger.warn("start_ex_hentai_download exception", e);
 			return END_OF_GRAB_PAGE;
 		}
 	}

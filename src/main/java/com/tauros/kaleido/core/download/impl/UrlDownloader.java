@@ -11,6 +11,8 @@ import com.tauros.kaleido.core.util.HttpUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URLConnection;
@@ -25,6 +27,8 @@ import static java.lang.Math.abs;
  * Created by tauros on 2016/4/9.
  */
 public final class UrlDownloader extends AbstractDownloader implements DownloadConstant {
+
+	private static Logger logger = LoggerFactory.getLogger(UrlDownloader.class);
 
 	static {
 		System.setProperty("http.maxRedirects", "100");
@@ -89,7 +93,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 				fileNameList.addAll(tempList);
 			}
 		} catch (IOException e) {
-			ConsoleLog.e(e);
+			logger.error("读取已下载列表出错", e);
 			fileNameList = new CopyOnWriteArrayList<String>();
 		}
 		return fileNameList;
@@ -113,7 +117,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 	public boolean preDownload() {
 		updateStatus("准备下载工作");
 		if (StringUtils.isBlank(filePath) || StringUtils.isBlank(fileName) || findDownloaded()) {
-			ConsoleLog.e(url + " - 下载取消");
+			logger.info(url + " - 下载取消");
 			this.retryAble = false;
 			return false;
 		}
@@ -198,11 +202,11 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 			bufferedOutputStream.flush();
 			return true;
 		} catch (IOException ioe) {
-			ConsoleLog.e("processDownload exception url=" + url, ioe);
+			logger.warn("processDownload exception url=" + url, ioe);
 			updateStatus("下载失败");
 			return false;
 		} catch (KaleidoException ke) {
-			ConsoleLog.e("processDownload exception url=" + url, ke);
+			logger.warn("processDownload exception url=" + url, ke);
 			updateStatus("下载失败");
 			return false;
 		} finally {
@@ -244,7 +248,7 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
 			CopyOnWriteArrayList<String> downloadedList = getDownloadedList();
 			downloadedList.add(fileName);
 		} catch (IOException ioe) {
-			ConsoleLog.e("写入文件下载成功出错", ioe);
+			logger.error("写入已下载列表出错", ioe);
 		} finally {
 			IOUtils.closeQuietly(outputStream);
 		}
