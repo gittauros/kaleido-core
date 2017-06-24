@@ -382,7 +382,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 			}
 			return data;
 		} catch (IOException ioe) {
-			logger.warn("访问图片失败 url=" + url, ioe);
+			logger.warn("visit image fail url=" + url, ioe);
 			return new byte[0];
 		} finally {
 			IOUtils.closeQuietly(inputStream);
