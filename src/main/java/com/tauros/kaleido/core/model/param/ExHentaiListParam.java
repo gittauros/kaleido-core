@@ -1,9 +1,9 @@
-package com.tauros.kaleido.core.model.bean;
+package com.tauros.kaleido.core.model.param;
 
 /**
  * Created by tauros on 2016/4/9.
  */
-public class ExHentaiListParamBean {
+public class ExHentaiListParam {
 
     private int    page;
     private int    fDoujinshi;
@@ -23,7 +23,7 @@ public class ExHentaiListParamBean {
     private String fSname;
     private String fStags;
 
-    public ExHentaiListParamBean() {
+    public ExHentaiListParam() {
         this.page = 1;
         this.fDoujinshi = 1;
         this.fManga = 1;

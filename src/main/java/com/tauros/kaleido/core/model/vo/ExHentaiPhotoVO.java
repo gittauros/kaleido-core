@@ -1,9 +1,9 @@
-package com.tauros.kaleido.core.model.bo;
+package com.tauros.kaleido.core.model.vo;
 
 /**
  * Created by tauros on 2016/4/23.
  */
-public class ExHentaiPhotoBO {
+public class ExHentaiPhotoVO {
 
     private String photoImg;
     private int    curPage;

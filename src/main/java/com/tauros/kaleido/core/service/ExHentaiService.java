@@ -1,6 +1,6 @@
 package com.tauros.kaleido.core.service;
 
-import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
+import com.tauros.kaleido.core.model.param.ExHentaiListParam;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public interface ExHentaiService {
      *
      * @return
      */
-    Map<String, Object> searchListPage(ExHentaiListParamBean paramBean);
+    Map<String, Object> searchListPage(ExHentaiListParam paramBean);
 
     /**
      * 抓取ex-hentai相册页

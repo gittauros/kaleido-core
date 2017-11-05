@@ -4,10 +4,10 @@ import com.tauros.kaleido.core.constant.CacheTypeConstant;
 import com.tauros.kaleido.core.constant.DownloadConstant;
 import com.tauros.kaleido.core.constant.ExHentaiConstant;
 import com.tauros.kaleido.core.download.UrlDownloaderDispatcher;
-import com.tauros.kaleido.core.model.bean.ExHentaiListParamBean;
-import com.tauros.kaleido.core.model.bo.ExHentaiGalleryBO;
-import com.tauros.kaleido.core.model.bo.ExHentaiListBO;
-import com.tauros.kaleido.core.model.bo.ExHentaiPhotoBO;
+import com.tauros.kaleido.core.model.param.ExHentaiListParam;
+import com.tauros.kaleido.core.model.vo.ExHentaiGalleryVO;
+import com.tauros.kaleido.core.model.vo.ExHentaiListVO;
+import com.tauros.kaleido.core.model.vo.ExHentaiPhotoVO;
 import com.tauros.kaleido.core.service.CacheService;
 import com.tauros.kaleido.core.service.ExHentaiService;
 import com.tauros.kaleido.core.spider.impl.ExHentaiJsoupCookieDocumentSpider;
@@ -75,7 +75,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
     }
 
     @Override
-    public Map<String, Object> searchListPage(ExHentaiListParamBean paramBean) {
+    public Map<String, Object> searchListPage(ExHentaiListParam paramBean) {
         Map<String, Object> model = new HashMap<>();
         String url = EXHENTAI_LIST_URL + '?';
         if (paramBean.getPage() > 1) {
@@ -100,7 +100,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
 
         Document document = exHentaiJsoupCookieDocumentSpider.captureDocument(url, "exhentai.org", null);
 
-        List<ExHentaiListBO> listBOs = new ArrayList<>();
+        List<ExHentaiListVO> listBOs = new ArrayList<>();
         Elements table = document.select(".itg");
         if (table != null) {
             Elements trs = table.select("tr");
@@ -130,7 +130,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
                     title = img.attr("alt");
                 }
 
-                ExHentaiListBO listBO = new ExHentaiListBO();
+                ExHentaiListVO listBO = new ExHentaiListVO();
                 listBO.setTagImg(tagImg);
                 listBO.setPublishTime(time);
                 listBO.setCoverImg(coverImg);
@@ -177,7 +177,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
             cacheService.putStringData(CacheTypeConstant.HTML, cacheKey, document.toString());
         }
 
-        List<ExHentaiGalleryBO> galleryBOs = new ArrayList<>();
+        List<ExHentaiGalleryVO> galleryBOs = new ArrayList<>();
         Elements photos;
         if (large) {
             photos = document.select(".gdtl");
@@ -265,7 +265,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
                 }
             }
 
-            ExHentaiGalleryBO galleryBO = new ExHentaiGalleryBO();
+            ExHentaiGalleryVO galleryBO = new ExHentaiGalleryVO();
             galleryBO.setLargeImg(largeImg);
             galleryBO.setSmallImgXOffset(smallImgXOffset);
             galleryBO.setSmallImgYOffset(smallImgYOffset);
@@ -337,7 +337,7 @@ public class ExHentaiServiceImpl implements ExHentaiService, ExHentaiConstant, D
         int curPage = NumberUtils.toInt(curPageSpan.html(), 1);
         int lastPage = NumberUtils.toInt(lastPageSpan.html(), 1);
 
-        ExHentaiPhotoBO photoBO = new ExHentaiPhotoBO();
+        ExHentaiPhotoVO photoBO = new ExHentaiPhotoVO();
         photoBO.setPhotoImg(photoImg);
         photoBO.setCurPage(curPage);
         photoBO.setLastPage(lastPage);

@@ -1,9 +1,9 @@
-package com.tauros.kaleido.core.model.bo;
+package com.tauros.kaleido.core.model.vo;
 
 /**
  * Created by tauros on 2016/4/9.
  */
-public class ExHentaiListBO {
+public class ExHentaiListVO {
 
     private String title;
     private String coverImg;

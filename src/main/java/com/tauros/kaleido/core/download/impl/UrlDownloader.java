@@ -188,10 +188,10 @@ public final class UrlDownloader extends AbstractDownloader implements DownloadC
             }
 //			ConsoleLog.e(processLength + "/" + fileLength);
             if (processLength < fileLength) {
-                updateStatus(String.format("processDownload fail processLength:{} fileLength:{}", processLength, fileLength));
+                updateStatus(String.format("processDownload fail processLength:%s fileLength:%s", processLength, fileLength));
                 return false;
             } else if (processLength > fileLength) {
-                throw new KaleidoIllegalStateException(String.format("processDownload > processLength {}/{}", processLength, fileLength));
+                throw new KaleidoIllegalStateException(String.format("processDownload > processLength %s/%s", processLength, fileLength));
             }
             bufferedOutputStream.flush();
             return true;
