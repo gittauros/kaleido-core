@@ -12,6 +12,7 @@
     <!--service-->
     <bean id="exHentaiService" class="com.tauros.kaleido.core.service.impl.ExHentaiServiceImpl"/>
     <bean id="cacheService" class="com.tauros.kaleido.core.service.impl.CacheServiceImpl"/>
+    <bean id="fitnessService" class="com.tauros.kaleido.core.service.impl.FitnessServiceImpl"/>
 
     <!--spider-->
     <bean id="exHentaiJsoupCookieDocumentSpider"

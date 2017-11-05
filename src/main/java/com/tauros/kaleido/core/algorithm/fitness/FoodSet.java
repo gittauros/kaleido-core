@@ -54,7 +54,19 @@ public class FoodSet {
         } else {
             this.dietaryScoreNerf = dietaryScoreNerf;
         }
-        Asserts.check(this.dietaryScoreNerf > 0 || Math.abs(this.dietaryScoreNerf - 0) < 1e-8, "纤维素除数必须大于1");
+        Asserts.check(this.dietaryScoreNerf > 0, "纤维素除数必须大于1");
+    }
+
+    public FoodSet(BigDecimal protein, BigDecimal fat, BigDecimal carbohydrate, BigDecimal calorie) {
+        this(protein, fat, carbohydrate, calorie, null, null);
+    }
+
+    public FoodSet(BigDecimal protein, BigDecimal fat, BigDecimal carbohydrate, BigDecimal calorie, BigDecimal factRatio) {
+        this(protein, fat, carbohydrate, calorie, factRatio, null);
+    }
+
+    public FoodSet(BigDecimal protein, BigDecimal fat, BigDecimal carbohydrate, BigDecimal calorie, Double dietaryScoreNerf) {
+        this(protein, fat, carbohydrate, calorie, null, dietaryScoreNerf);
     }
 
     public static boolean isLegal(BigDecimal value, BigDecimal expect, double ratio) {

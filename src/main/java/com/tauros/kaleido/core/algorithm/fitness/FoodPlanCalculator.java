@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * Created by zhy on 2017/11/5.
  */
-public class FoodPlanCaculator {
+public class FoodPlanCalculator {
 
     private List<FoodServ>            foodList;
     private Set<String>               tagSet;
@@ -19,12 +19,14 @@ public class FoodPlanCaculator {
     private List<SearchNode>          resultList;
     private FoodSet                   target;
     private int                       maxResult;
+    private int                       kickedCount;
     private int                       maxKickedCount;
     private BigDecimal                minCalorie;
 
-    public FoodPlanCaculator(List<FoodServ> foodList, FoodSet target, int maxResult) {
+    public FoodPlanCalculator(List<FoodServ> foodList, FoodSet target, int maxResult) {
         Asserts.check(foodList != null && !foodList.isEmpty(), "foodList is null or empty");
         Asserts.notNull(target, "target is null");
+        Asserts.check(maxResult < 61 && maxResult > 0, "maxResult must less than 61 and greater than 0");
         this.foodList = foodList;
         this.target = target;
         this.planQueue = new PriorityQueue<>(new Comparator<SearchNode>() {
@@ -36,15 +38,16 @@ public class FoodPlanCaculator {
         this.resultList = new ArrayList<>();
         this.tagSet = new TreeSet<>();
         this.maxResult = maxResult;
+        this.maxKickedCount = 100000;
         this.minCalorie = target.getCalorie().multiply(new BigDecimal(0.75));
     }
 
-    public void searchResult() {
+    public synchronized void searchResult() {
         FoodPlan initPlan = new FoodPlan();
         initPlan.setFactRatio(target.getFactRatio());
         planQueue.add(new SearchNode(initPlan, calculateScore(initPlan)));
         SearchNode top;
-        int kickedCount = 0;
+        this.kickedCount = 0;
         while (!planQueue.isEmpty()) {
             top = planQueue.poll();
             if (top == null) {
@@ -78,8 +81,8 @@ public class FoodPlanCaculator {
                 });
                 if (resultList.size() > maxResult) {
                     resultList.remove(resultList.size() - 1);
-                    kickedCount++;
-                    if (maxKickedCount <= 0 || kickedCount > maxKickedCount) {
+                    this.kickedCount++;
+                    if (maxKickedCount >= 0 && kickedCount > maxKickedCount) {
                         break;
                     }
                 }
@@ -87,7 +90,7 @@ public class FoodPlanCaculator {
         }
     }
 
-    public void clear() {
+    public synchronized void clear() {
         this.planQueue.clear();
         this.tagSet.clear();
         this.resultList.clear();
@@ -192,47 +195,37 @@ public class FoodPlanCaculator {
             object.put("score", score.toPlainString());
             return object.toJSONString();
         }
+
+        public SearchNode obtain() {
+            SearchNode searchNode = new SearchNode(this.foodPlan.obtain(), this.score);
+            return searchNode;
+        }
     }
 
     public int getMaxResult() {
         return maxResult;
     }
 
-    public void setMaxResult(int maxResult) {
-        this.maxResult = maxResult;
-    }
-
     public int getMaxKickedCount() {
         return maxKickedCount;
     }
 
-    public void setMaxKickedCount(int maxKickedCount) {
+    public synchronized void setMaxKickedCount(int maxKickedCount) {
+        Asserts.check(maxKickedCount > 0, "maxKickedCount must greater than 0");
         this.maxKickedCount = maxKickedCount;
     }
 
-    public FoodSet getTarget() {
-        return target;
-    }
-
-    public void setTarget(FoodSet target) {
-        this.target = target;
-    }
-
-    public List<FoodServ> getFoodList() {
-        return foodList;
-    }
-
-    public void setFoodList(List<FoodServ> foodList) {
-        this.foodList = foodList;
-    }
-
     public List<SearchNode> getResultList() {
-        return resultList;
+        List<SearchNode> copy = new ArrayList<>();
+        for (SearchNode searchNode : resultList) {
+            copy.add(searchNode.obtain());
+        }
+        return copy;
     }
 
     public JSONArray getResultJSONArray() {
         JSONArray resultArray = new JSONArray();
-        for (FoodPlanCaculator.SearchNode node : resultList) {
+        for (SearchNode node : resultList) {
             resultArray.add(JSON.parseObject(node.toString()));
         }
         return resultArray;
@@ -246,7 +239,8 @@ public class FoodPlanCaculator {
         return minCalorie;
     }
 
-    public void setMinCalorie(BigDecimal minCalorie) {
-        this.minCalorie = minCalorie;
+    public BigDecimal getProcess() {
+        return new BigDecimal(this.kickedCount).divide(new BigDecimal(this.maxKickedCount), 6, BigDecimal.ROUND_HALF_UP)
+                                               .multiply(new BigDecimal(100));
     }
 }
