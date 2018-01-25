@@ -211,7 +211,9 @@ public class FoodPlanCalculator {
     }
 
     public synchronized void setMaxKickedCount(int maxKickedCount) {
-        Asserts.check(maxKickedCount > 0, "maxKickedCount must greater than 0");
+        if (maxKickedCount <= 0) {
+            maxKickedCount = 10000;
+        }
         this.maxKickedCount = maxKickedCount;
     }
 
